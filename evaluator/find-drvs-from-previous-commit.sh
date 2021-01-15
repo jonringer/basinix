@@ -67,5 +67,6 @@ git checkout HEAD^
 
 list_drvs > old_drvs.txt
 
-comm -23 old_drvs.txt new_drvs.txt > diff_drvs.txt
+comm -23 old_drvs.txt new_drvs.txt > old_diff_drvs.txt
+comm -13 old_drvs.txt new_drvs.txt > new_diff_drvs.txt
 
