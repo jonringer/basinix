@@ -1,0 +1,13 @@
+[package]
+name = "basinix"
+version = "0.1.0"
+authors = ["Jonathan Ringer <jonringer117@gmail.com>"]
+edition = "2018"
+description = "Continuous Integration Server for nixpkgs"
+repository = "https://github.com/jonringer/basinix"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = { version = "0.2", features = ["full"] }
+warp = "0.2"
