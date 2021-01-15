@@ -14,9 +14,13 @@
           clippy
           elmPackages.elm
         ];
+        shellHook = ''
+          test -f ~/.bashrc && source ~/.bashrc
+        '';
       };
     in rec {
         defaultPackage = devEnv;
+        devShell = devEnv;
       }
     );
 
