@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use serde;
 use serde_json;
 
-type Events = Vec<Event>;
+pub type Events = Vec<Event>;
 
 #[derive(Serialize, Deserialize)]
 pub struct Event {
@@ -136,7 +136,7 @@ pub struct Comment {
     diff_hunk: Option<String>,
 
     #[serde(rename = "path")]
-    path: Option<Path>,
+    path: Option<String>,
 
     #[serde(rename = "position")]
     position: Option<i64>,
@@ -148,7 +148,7 @@ pub struct Comment {
     commit_id: Option<String>,
 
     #[serde(rename = "original_commit_id")]
-    original_commit_id: Option<OriginalCommitId>,
+    original_commit_id: Option<String>,
 
     #[serde(rename = "pull_request_url")]
     pull_request_url: Option<String>,
@@ -376,7 +376,7 @@ pub struct LabelElement {
     name: String,
 
     #[serde(rename = "color")]
-    color: Color,
+    color: String,
 
     #[serde(rename = "default")]
     label_default: bool,
@@ -547,13 +547,13 @@ pub struct PayloadPullRequest {
 #[derive(Serialize, Deserialize)]
 pub struct Base {
     #[serde(rename = "label")]
-    label: LabelEnum,
+    label: String,
 
     #[serde(rename = "ref")]
-    base_ref: Ref,
+    base_ref: String,
 
     #[serde(rename = "sha")]
-    sha: Sha,
+    sha: String,
 
     #[serde(rename = "user")]
     user: User,
@@ -568,13 +568,13 @@ pub struct BaseRepo {
     id: i64,
 
     #[serde(rename = "node_id")]
-    node_id: RepoNodeId,
+    node_id: String,
 
     #[serde(rename = "name")]
     name: PurpleName,
 
     #[serde(rename = "full_name")]
-    full_name: FullNameEnum,
+    full_name: String,
 
     #[serde(rename = "private")]
     private: bool,
@@ -586,7 +586,7 @@ pub struct BaseRepo {
     html_url: String,
 
     #[serde(rename = "description")]
-    description: Description,
+    description: String,
 
     #[serde(rename = "fork")]
     fork: bool,
@@ -598,7 +598,7 @@ pub struct BaseRepo {
     forks_url: String,
 
     #[serde(rename = "keys_url")]
-    keys_url: KeysUrl,
+    keys_url: String,
 
     #[serde(rename = "collaborators_url")]
     collaborators_url: String,
@@ -625,19 +625,19 @@ pub struct BaseRepo {
     tags_url: String,
 
     #[serde(rename = "blobs_url")]
-    blobs_url: BlobsUrl,
+    blobs_url: String,
 
     #[serde(rename = "git_tags_url")]
-    git_tags_url: GitTagsUrl,
+    git_tags_url: String,
 
     #[serde(rename = "git_refs_url")]
-    git_refs_url: GitRefsUrl,
+    git_refs_url: String,
 
     #[serde(rename = "trees_url")]
-    trees_url: TreesUrl,
+    trees_url: String,
 
     #[serde(rename = "statuses_url")]
-    statuses_url: StatusesUrl,
+    statuses_url: String,
 
     #[serde(rename = "languages_url")]
     languages_url: String,
@@ -655,7 +655,7 @@ pub struct BaseRepo {
     subscription_url: String,
 
     #[serde(rename = "commits_url")]
-    commits_url: CommitsUrl,
+    commits_url: String,
 
     #[serde(rename = "git_commits_url")]
     git_commits_url: String,
@@ -682,10 +682,10 @@ pub struct BaseRepo {
     downloads_url: String,
 
     #[serde(rename = "issues_url")]
-    issues_url: IssuesUrl,
+    issues_url: String,
 
     #[serde(rename = "pulls_url")]
-    pulls_url: PullsUrl,
+    pulls_url: String,
 
     #[serde(rename = "milestones_url")]
     milestones_url: String,
@@ -694,10 +694,10 @@ pub struct BaseRepo {
     notifications_url: String,
 
     #[serde(rename = "labels_url")]
-    labels_url: LabelsUrl,
+    labels_url: String,
 
     #[serde(rename = "releases_url")]
-    releases_url: ReleasesUrl,
+    releases_url: String,
 
     #[serde(rename = "deployments_url")]
     deployments_url: String,
@@ -712,10 +712,10 @@ pub struct BaseRepo {
     pushed_at: String,
 
     #[serde(rename = "git_url")]
-    git_url: GitUrl,
+    git_url: String,
 
     #[serde(rename = "ssh_url")]
-    ssh_url: SshUrl,
+    ssh_url: String,
 
     #[serde(rename = "clone_url")]
     clone_url: String,
@@ -736,7 +736,7 @@ pub struct BaseRepo {
     watchers_count: i64,
 
     #[serde(rename = "language")]
-    language: Language,
+    language: String,
 
     #[serde(rename = "has_issues")]
     has_issues: bool,
@@ -769,7 +769,7 @@ pub struct BaseRepo {
     open_issues_count: i64,
 
     #[serde(rename = "license")]
-    license: License,
+    license: Option<License>,
 
     #[serde(rename = "forks")]
     forks: i64,
@@ -781,16 +781,16 @@ pub struct BaseRepo {
     watchers: i64,
 
     #[serde(rename = "default_branch")]
-    default_branch: Ref,
+    default_branch: String,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct License {
     #[serde(rename = "key")]
-    key: Key,
+    key: String,
 
     #[serde(rename = "name")]
-    name: LicenseName,
+    name: String,
 
     #[serde(rename = "spdx_id")]
     spdx_id: SpdxId,
@@ -799,7 +799,7 @@ pub struct License {
     url: Option<String>,
 
     #[serde(rename = "node_id")]
-    node_id: LicenseNodeId,
+    node_id: String,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -898,7 +898,7 @@ pub struct EventRepo {
     id: i64,
 
     #[serde(rename = "name")]
-    name: FullNameEnum,
+    name: String,
 
     #[serde(rename = "url")]
     url: String,
@@ -917,6 +917,9 @@ pub enum EventType {
 
     #[serde(rename = "PullRequestReviewEvent")]
     PullRequestReviewEvent,
+
+    #[serde(rename = "IssuesEvent")]
+    IssuesEvent,
 
     #[serde(rename = "PushEvent")]
     PushEvent,
@@ -947,30 +950,6 @@ pub enum AuthorAssociation {
 }
 
 #[derive(Serialize, Deserialize)]
-pub enum OriginalCommitId {
-    #[serde(rename = "af19299b6545d973f957e724450052214163f060")]
-    Af19299B6545D973F957E724450052214163F060,
-
-    #[serde(rename = "cda6ed115d23f6518211306157a0366c49de00e8")]
-    Cda6Ed115D23F6518211306157A0366C49De00E8,
-
-    #[serde(rename = "86106f042b5e30ebb816febaa2a03998ca31e207")]
-    The86106F042B5E30Ebb816Febaa2A03998Ca31E207,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum Path {
-    #[serde(rename = "nixos/modules/system/boot/stage-1.nix")]
-    NixosModulesSystemBootStage1Nix,
-
-    #[serde(rename = "pkgs/development/tools/hindsight/default.nix")]
-    PkgsDevelopmentToolsHindsightDefaultNix,
-
-    #[serde(rename = "pkgs/servers/code-server/default.nix")]
-    PkgsServersCodeServerDefaultNix,
-}
-
-#[derive(Serialize, Deserialize)]
 pub enum Side {
     #[serde(rename = "LEFT")]
     Left,
@@ -992,300 +971,12 @@ pub enum UserType {
 }
 
 #[derive(Serialize, Deserialize)]
-pub enum Color {
-    #[serde(rename = "b60205")]
-    B60205,
-
-    #[serde(rename = "ddeecc")]
-    Ddeecc,
-
-    #[serde(rename = "e6e6e6")]
-    E6E6E6,
-
-    #[serde(rename = "ededed")]
-    Ededed,
-
-    #[serde(rename = "eeffee")]
-    Eeffee,
-
-    #[serde(rename = "fbca04")]
-    Fbca04,
-
-    #[serde(rename = "fef2c0")]
-    Fef2C0,
-
-    #[serde(rename = "009800")]
-    The009800,
-
-    #[serde(rename = "84b6eb")]
-    The84B6Eb,
-}
-
-#[derive(Serialize, Deserialize)]
 pub enum IssueState {
     #[serde(rename = "closed")]
     Closed,
 
     #[serde(rename = "open")]
     Open,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum Ref {
-    #[serde(rename = "master")]
-    Master,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum LabelEnum {
-    #[serde(rename = "NixOS:master")]
-    NixOsMaster,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum BlobsUrl {
-    #[serde(rename = "https://api.github.com/repos/chkno/nixpkgs/git/blobs{/sha}")]
-    HttpsApiGithubComReposChknoNixpkgsGitBlobsSha,
-
-    #[serde(rename = "https://api.github.com/repos/delroth/nixpkgs/git/blobs{/sha}")]
-    HttpsApiGithubComReposDelrothNixpkgsGitBlobsSha,
-
-    #[serde(rename = "https://api.github.com/repos/dguenther/nixpkgs/git/blobs{/sha}")]
-    HttpsApiGithubComReposDguentherNixpkgsGitBlobsSha,
-
-    #[serde(rename = "https://api.github.com/repos/GovanifY/nixpkgs/git/blobs{/sha}")]
-    HttpsApiGithubComReposGovanifYNixpkgsGitBlobsSha,
-
-    #[serde(rename = "https://api.github.com/repos/NixOS/nixpkgs/git/blobs{/sha}")]
-    HttpsApiGithubComReposNixOsNixpkgsGitBlobsSha,
-
-    #[serde(rename = "https://api.github.com/repos/Profpatsch/nixpkgs/git/blobs{/sha}")]
-    HttpsApiGithubComReposProfpatschNixpkgsGitBlobsSha,
-
-    #[serde(rename = "https://api.github.com/repos/ryneeverett/nixpkgs/git/blobs{/sha}")]
-    HttpsApiGithubComReposRyneeverettNixpkgsGitBlobsSha,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum CommitsUrl {
-    #[serde(rename = "https://api.github.com/repos/chkno/nixpkgs/commits{/sha}")]
-    HttpsApiGithubComReposChknoNixpkgsCommitsSha,
-
-    #[serde(rename = "https://api.github.com/repos/delroth/nixpkgs/commits{/sha}")]
-    HttpsApiGithubComReposDelrothNixpkgsCommitsSha,
-
-    #[serde(rename = "https://api.github.com/repos/dguenther/nixpkgs/commits{/sha}")]
-    HttpsApiGithubComReposDguentherNixpkgsCommitsSha,
-
-    #[serde(rename = "https://api.github.com/repos/GovanifY/nixpkgs/commits{/sha}")]
-    HttpsApiGithubComReposGovanifYNixpkgsCommitsSha,
-
-    #[serde(rename = "https://api.github.com/repos/NixOS/nixpkgs/commits{/sha}")]
-    HttpsApiGithubComReposNixOsNixpkgsCommitsSha,
-
-    #[serde(rename = "https://api.github.com/repos/Profpatsch/nixpkgs/commits{/sha}")]
-    HttpsApiGithubComReposProfpatschNixpkgsCommitsSha,
-
-    #[serde(rename = "https://api.github.com/repos/ryneeverett/nixpkgs/commits{/sha}")]
-    HttpsApiGithubComReposRyneeverettNixpkgsCommitsSha,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum Description {
-    #[serde(rename = "Nix Packages collection")]
-    NixPackagesCollection,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum FullNameEnum {
-    #[serde(rename = "chkno/nixpkgs")]
-    ChknoNixpkgs,
-
-    #[serde(rename = "delroth/nixpkgs")]
-    DelrothNixpkgs,
-
-    #[serde(rename = "dguenther/nixpkgs")]
-    DguentherNixpkgs,
-
-    #[serde(rename = "GovanifY/nixpkgs")]
-    GovanifYNixpkgs,
-
-    #[serde(rename = "NixOS/nixpkgs")]
-    NixOsNixpkgs,
-
-    #[serde(rename = "Profpatsch/nixpkgs")]
-    ProfpatschNixpkgs,
-
-    #[serde(rename = "ryneeverett/nixpkgs")]
-    RyneeverettNixpkgs,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum GitRefsUrl {
-    #[serde(rename = "https://api.github.com/repos/chkno/nixpkgs/git/refs{/sha}")]
-    HttpsApiGithubComReposChknoNixpkgsGitRefsSha,
-
-    #[serde(rename = "https://api.github.com/repos/delroth/nixpkgs/git/refs{/sha}")]
-    HttpsApiGithubComReposDelrothNixpkgsGitRefsSha,
-
-    #[serde(rename = "https://api.github.com/repos/dguenther/nixpkgs/git/refs{/sha}")]
-    HttpsApiGithubComReposDguentherNixpkgsGitRefsSha,
-
-    #[serde(rename = "https://api.github.com/repos/GovanifY/nixpkgs/git/refs{/sha}")]
-    HttpsApiGithubComReposGovanifYNixpkgsGitRefsSha,
-
-    #[serde(rename = "https://api.github.com/repos/NixOS/nixpkgs/git/refs{/sha}")]
-    HttpsApiGithubComReposNixOsNixpkgsGitRefsSha,
-
-    #[serde(rename = "https://api.github.com/repos/Profpatsch/nixpkgs/git/refs{/sha}")]
-    HttpsApiGithubComReposProfpatschNixpkgsGitRefsSha,
-
-    #[serde(rename = "https://api.github.com/repos/ryneeverett/nixpkgs/git/refs{/sha}")]
-    HttpsApiGithubComReposRyneeverettNixpkgsGitRefsSha,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum GitTagsUrl {
-    #[serde(rename = "https://api.github.com/repos/chkno/nixpkgs/git/tags{/sha}")]
-    HttpsApiGithubComReposChknoNixpkgsGitTagsSha,
-
-    #[serde(rename = "https://api.github.com/repos/delroth/nixpkgs/git/tags{/sha}")]
-    HttpsApiGithubComReposDelrothNixpkgsGitTagsSha,
-
-    #[serde(rename = "https://api.github.com/repos/dguenther/nixpkgs/git/tags{/sha}")]
-    HttpsApiGithubComReposDguentherNixpkgsGitTagsSha,
-
-    #[serde(rename = "https://api.github.com/repos/GovanifY/nixpkgs/git/tags{/sha}")]
-    HttpsApiGithubComReposGovanifYNixpkgsGitTagsSha,
-
-    #[serde(rename = "https://api.github.com/repos/NixOS/nixpkgs/git/tags{/sha}")]
-    HttpsApiGithubComReposNixOsNixpkgsGitTagsSha,
-
-    #[serde(rename = "https://api.github.com/repos/Profpatsch/nixpkgs/git/tags{/sha}")]
-    HttpsApiGithubComReposProfpatschNixpkgsGitTagsSha,
-
-    #[serde(rename = "https://api.github.com/repos/ryneeverett/nixpkgs/git/tags{/sha}")]
-    HttpsApiGithubComReposRyneeverettNixpkgsGitTagsSha,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum GitUrl {
-    #[serde(rename = "git://github.com/chkno/nixpkgs.git")]
-    GitGithubComChknoNixpkgsGit,
-
-    #[serde(rename = "git://github.com/delroth/nixpkgs.git")]
-    GitGithubComDelrothNixpkgsGit,
-
-    #[serde(rename = "git://github.com/dguenther/nixpkgs.git")]
-    GitGithubComDguentherNixpkgsGit,
-
-    #[serde(rename = "git://github.com/GovanifY/nixpkgs.git")]
-    GitGithubComGovanifYNixpkgsGit,
-
-    #[serde(rename = "git://github.com/NixOS/nixpkgs.git")]
-    GitGithubComNixOsNixpkgsGit,
-
-    #[serde(rename = "git://github.com/Profpatsch/nixpkgs.git")]
-    GitGithubComProfpatschNixpkgsGit,
-
-    #[serde(rename = "git://github.com/ryneeverett/nixpkgs.git")]
-    GitGithubComRyneeverettNixpkgsGit,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum IssuesUrl {
-    #[serde(rename = "https://api.github.com/repos/chkno/nixpkgs/issues{/number}")]
-    HttpsApiGithubComReposChknoNixpkgsIssuesNumber,
-
-    #[serde(rename = "https://api.github.com/repos/delroth/nixpkgs/issues{/number}")]
-    HttpsApiGithubComReposDelrothNixpkgsIssuesNumber,
-
-    #[serde(rename = "https://api.github.com/repos/dguenther/nixpkgs/issues{/number}")]
-    HttpsApiGithubComReposDguentherNixpkgsIssuesNumber,
-
-    #[serde(rename = "https://api.github.com/repos/GovanifY/nixpkgs/issues{/number}")]
-    HttpsApiGithubComReposGovanifYNixpkgsIssuesNumber,
-
-    #[serde(rename = "https://api.github.com/repos/NixOS/nixpkgs/issues{/number}")]
-    HttpsApiGithubComReposNixOsNixpkgsIssuesNumber,
-
-    #[serde(rename = "https://api.github.com/repos/Profpatsch/nixpkgs/issues{/number}")]
-    HttpsApiGithubComReposProfpatschNixpkgsIssuesNumber,
-
-    #[serde(rename = "https://api.github.com/repos/ryneeverett/nixpkgs/issues{/number}")]
-    HttpsApiGithubComReposRyneeverettNixpkgsIssuesNumber,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum KeysUrl {
-    #[serde(rename = "https://api.github.com/repos/chkno/nixpkgs/keys{/key_id}")]
-    HttpsApiGithubComReposChknoNixpkgsKeysKeyId,
-
-    #[serde(rename = "https://api.github.com/repos/delroth/nixpkgs/keys{/key_id}")]
-    HttpsApiGithubComReposDelrothNixpkgsKeysKeyId,
-
-    #[serde(rename = "https://api.github.com/repos/dguenther/nixpkgs/keys{/key_id}")]
-    HttpsApiGithubComReposDguentherNixpkgsKeysKeyId,
-
-    #[serde(rename = "https://api.github.com/repos/GovanifY/nixpkgs/keys{/key_id}")]
-    HttpsApiGithubComReposGovanifYNixpkgsKeysKeyId,
-
-    #[serde(rename = "https://api.github.com/repos/NixOS/nixpkgs/keys{/key_id}")]
-    HttpsApiGithubComReposNixOsNixpkgsKeysKeyId,
-
-    #[serde(rename = "https://api.github.com/repos/Profpatsch/nixpkgs/keys{/key_id}")]
-    HttpsApiGithubComReposProfpatschNixpkgsKeysKeyId,
-
-    #[serde(rename = "https://api.github.com/repos/ryneeverett/nixpkgs/keys{/key_id}")]
-    HttpsApiGithubComReposRyneeverettNixpkgsKeysKeyId,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum LabelsUrl {
-    #[serde(rename = "https://api.github.com/repos/chkno/nixpkgs/labels{/name}")]
-    HttpsApiGithubComReposChknoNixpkgsLabelsName,
-
-    #[serde(rename = "https://api.github.com/repos/delroth/nixpkgs/labels{/name}")]
-    HttpsApiGithubComReposDelrothNixpkgsLabelsName,
-
-    #[serde(rename = "https://api.github.com/repos/dguenther/nixpkgs/labels{/name}")]
-    HttpsApiGithubComReposDguentherNixpkgsLabelsName,
-
-    #[serde(rename = "https://api.github.com/repos/GovanifY/nixpkgs/labels{/name}")]
-    HttpsApiGithubComReposGovanifYNixpkgsLabelsName,
-
-    #[serde(rename = "https://api.github.com/repos/NixOS/nixpkgs/labels{/name}")]
-    HttpsApiGithubComReposNixOsNixpkgsLabelsName,
-
-    #[serde(rename = "https://api.github.com/repos/Profpatsch/nixpkgs/labels{/name}")]
-    HttpsApiGithubComReposProfpatschNixpkgsLabelsName,
-
-    #[serde(rename = "https://api.github.com/repos/ryneeverett/nixpkgs/labels{/name}")]
-    HttpsApiGithubComReposRyneeverettNixpkgsLabelsName,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum Language {
-    #[serde(rename = "Nix")]
-    Nix,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum Key {
-    #[serde(rename = "mit")]
-    Mit,
-
-    #[serde(rename = "other")]
-    Other,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum LicenseName {
-    #[serde(rename = "MIT License")]
-    MitLicense,
-
-    #[serde(rename = "Other")]
-    Other,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -1313,166 +1004,10 @@ pub enum PurpleName {
 }
 
 #[derive(Serialize, Deserialize)]
-pub enum RepoNodeId {
-    #[serde(rename = "MDEwOlJlcG9zaXRvcnk0NTQyNzE2")]
-    MdEwOlJlcG9ZaXRvcnk0NtQyNzE2,
-
-    #[serde(rename = "MDEwOlJlcG9zaXRvcnk1NzgwMTM0OA==")]
-    MdEwOlJlcG9ZaXRvcnk1NzgwMtm0Oa,
-
-    #[serde(rename = "MDEwOlJlcG9zaXRvcnkxNTI4NTAxMzI=")]
-    MdEwOlJlcG9ZaXRvcnkxNti4NtAxMzI,
-
-    #[serde(rename = "MDEwOlJlcG9zaXRvcnkxOTk3NDU4MTA=")]
-    MdEwOlJlcG9ZaXRvcnkxOTk3Ndu4Mta,
-
-    #[serde(rename = "MDEwOlJlcG9zaXRvcnkyMzY2NTQ3NTU=")]
-    MdEwOlJlcG9ZaXRvcnkyMzY2Ntq3Ntu,
-
-    #[serde(rename = "MDEwOlJlcG9zaXRvcnkyOTA5ODc0Ng==")]
-    MdEwOlJlcG9ZaXRvcnkyOta5ODc0Ng,
-
-    #[serde(rename = "MDEwOlJlcG9zaXRvcnkzMDQ1MDI1MDM=")]
-    MdEwOlJlcG9ZaXRvcnkzMdq1Mdi1Mdm,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum PullsUrl {
-    #[serde(rename = "https://api.github.com/repos/chkno/nixpkgs/pulls{/number}")]
-    HttpsApiGithubComReposChknoNixpkgsPullsNumber,
-
-    #[serde(rename = "https://api.github.com/repos/delroth/nixpkgs/pulls{/number}")]
-    HttpsApiGithubComReposDelrothNixpkgsPullsNumber,
-
-    #[serde(rename = "https://api.github.com/repos/dguenther/nixpkgs/pulls{/number}")]
-    HttpsApiGithubComReposDguentherNixpkgsPullsNumber,
-
-    #[serde(rename = "https://api.github.com/repos/GovanifY/nixpkgs/pulls{/number}")]
-    HttpsApiGithubComReposGovanifYNixpkgsPullsNumber,
-
-    #[serde(rename = "https://api.github.com/repos/NixOS/nixpkgs/pulls{/number}")]
-    HttpsApiGithubComReposNixOsNixpkgsPullsNumber,
-
-    #[serde(rename = "https://api.github.com/repos/Profpatsch/nixpkgs/pulls{/number}")]
-    HttpsApiGithubComReposProfpatschNixpkgsPullsNumber,
-
-    #[serde(rename = "https://api.github.com/repos/ryneeverett/nixpkgs/pulls{/number}")]
-    HttpsApiGithubComReposRyneeverettNixpkgsPullsNumber,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum ReleasesUrl {
-    #[serde(rename = "https://api.github.com/repos/chkno/nixpkgs/releases{/id}")]
-    HttpsApiGithubComReposChknoNixpkgsReleasesId,
-
-    #[serde(rename = "https://api.github.com/repos/delroth/nixpkgs/releases{/id}")]
-    HttpsApiGithubComReposDelrothNixpkgsReleasesId,
-
-    #[serde(rename = "https://api.github.com/repos/dguenther/nixpkgs/releases{/id}")]
-    HttpsApiGithubComReposDguentherNixpkgsReleasesId,
-
-    #[serde(rename = "https://api.github.com/repos/GovanifY/nixpkgs/releases{/id}")]
-    HttpsApiGithubComReposGovanifYNixpkgsReleasesId,
-
-    #[serde(rename = "https://api.github.com/repos/NixOS/nixpkgs/releases{/id}")]
-    HttpsApiGithubComReposNixOsNixpkgsReleasesId,
-
-    #[serde(rename = "https://api.github.com/repos/Profpatsch/nixpkgs/releases{/id}")]
-    HttpsApiGithubComReposProfpatschNixpkgsReleasesId,
-
-    #[serde(rename = "https://api.github.com/repos/ryneeverett/nixpkgs/releases{/id}")]
-    HttpsApiGithubComReposRyneeverettNixpkgsReleasesId,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum SshUrl {
-    #[serde(rename = "git@github.com:chkno/nixpkgs.git")]
-    GitGithubComChknoNixpkgsGit,
-
-    #[serde(rename = "git@github.com:delroth/nixpkgs.git")]
-    GitGithubComDelrothNixpkgsGit,
-
-    #[serde(rename = "git@github.com:dguenther/nixpkgs.git")]
-    GitGithubComDguentherNixpkgsGit,
-
-    #[serde(rename = "git@github.com:GovanifY/nixpkgs.git")]
-    GitGithubComGovanifYNixpkgsGit,
-
-    #[serde(rename = "git@github.com:NixOS/nixpkgs.git")]
-    GitGithubComNixOsNixpkgsGit,
-
-    #[serde(rename = "git@github.com:Profpatsch/nixpkgs.git")]
-    GitGithubComProfpatschNixpkgsGit,
-
-    #[serde(rename = "git@github.com:ryneeverett/nixpkgs.git")]
-    GitGithubComRyneeverettNixpkgsGit,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum StatusesUrl {
-    #[serde(rename = "https://api.github.com/repos/chkno/nixpkgs/statuses/{sha}")]
-    HttpsApiGithubComReposChknoNixpkgsStatusesSha,
-
-    #[serde(rename = "https://api.github.com/repos/delroth/nixpkgs/statuses/{sha}")]
-    HttpsApiGithubComReposDelrothNixpkgsStatusesSha,
-
-    #[serde(rename = "https://api.github.com/repos/dguenther/nixpkgs/statuses/{sha}")]
-    HttpsApiGithubComReposDguentherNixpkgsStatusesSha,
-
-    #[serde(rename = "https://api.github.com/repos/GovanifY/nixpkgs/statuses/{sha}")]
-    HttpsApiGithubComReposGovanifYNixpkgsStatusesSha,
-
-    #[serde(rename = "https://api.github.com/repos/NixOS/nixpkgs/statuses/{sha}")]
-    HttpsApiGithubComReposNixOsNixpkgsStatusesSha,
-
-    #[serde(rename = "https://api.github.com/repos/Profpatsch/nixpkgs/statuses/{sha}")]
-    HttpsApiGithubComReposProfpatschNixpkgsStatusesSha,
-
-    #[serde(rename = "https://api.github.com/repos/ryneeverett/nixpkgs/statuses/{sha}")]
-    HttpsApiGithubComReposRyneeverettNixpkgsStatusesSha,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum TreesUrl {
-    #[serde(rename = "https://api.github.com/repos/chkno/nixpkgs/git/trees{/sha}")]
-    HttpsApiGithubComReposChknoNixpkgsGitTreesSha,
-
-    #[serde(rename = "https://api.github.com/repos/delroth/nixpkgs/git/trees{/sha}")]
-    HttpsApiGithubComReposDelrothNixpkgsGitTreesSha,
-
-    #[serde(rename = "https://api.github.com/repos/dguenther/nixpkgs/git/trees{/sha}")]
-    HttpsApiGithubComReposDguentherNixpkgsGitTreesSha,
-
-    #[serde(rename = "https://api.github.com/repos/GovanifY/nixpkgs/git/trees{/sha}")]
-    HttpsApiGithubComReposGovanifYNixpkgsGitTreesSha,
-
-    #[serde(rename = "https://api.github.com/repos/NixOS/nixpkgs/git/trees{/sha}")]
-    HttpsApiGithubComReposNixOsNixpkgsGitTreesSha,
-
-    #[serde(rename = "https://api.github.com/repos/Profpatsch/nixpkgs/git/trees{/sha}")]
-    HttpsApiGithubComReposProfpatschNixpkgsGitTreesSha,
-
-    #[serde(rename = "https://api.github.com/repos/ryneeverett/nixpkgs/git/trees{/sha}")]
-    HttpsApiGithubComReposRyneeverettNixpkgsGitTreesSha,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum Sha {
-    #[serde(rename = "a5969bcd238cf8584512bb1e354172f75da375ca")]
-    A5969Bcd238Cf8584512Bb1E354172F75Da375Ca,
-
-    #[serde(rename = "c58219fff6890b2a2cb801cdfef29d4f6729b9ef")]
-    C58219Fff6890B2A2Cb801Cdfef29D4F6729B9Ef,
-
-    #[serde(rename = "2a9f33600cd8aa3c72fdcdbcc74bdd8096b81ab3")]
-    The2A9F33600Cd8Aa3C72Fdcdbcc74Bdd8096B81Ab3,
-
-    #[serde(rename = "4de9a335f970fd3652ece992cd981559761d98a1")]
-    The4De9A335F970Fd3652Ece992Cd981559761D98A1,
-}
-
-#[derive(Serialize, Deserialize)]
 pub enum ReviewState {
+    #[serde(rename = "approved")]
+    Approved,
+
     #[serde(rename = "commented")]
     Commented,
 }
