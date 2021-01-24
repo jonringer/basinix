@@ -9,5 +9,5 @@ repository = "https://github.com/jonringer/basinix"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio = { version = "0.2", features = ["full"] }
-warp = "0.2"
+tokio = { version = "1.0", features = ["full"] }
+warp = "0.3"
