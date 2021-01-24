@@ -1,3 +1,5 @@
+mod gh_events;
+
 #[cfg(test)]
 mod tests {
     #[test]
