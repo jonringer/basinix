@@ -1,5 +1,5 @@
 [package]
-name = "worker"
+name = "basinix_worker"
 version = "0.1.0"
 authors = ["Jonathan Ringer <jonringer117@gmail.com>"]
 edition = "2018"

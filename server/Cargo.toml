@@ -1,5 +1,5 @@
 [package]
-name = "basinix-server"
+name = "basinix_server"
 version = "0.1.0"
 authors = ["Jonathan Ringer <jonringer117@gmail.com>"]
 edition = "2018"
@@ -9,6 +9,12 @@ repository = "https://github.com/jonringer/basinix"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+chrono = "0.4"
+log = "0.4"
+env_logger = "0.8"
 tokio = { version = "1.0", features = ["full"] }
-reqwest = { version = "0.11", features = ["json"] }
+reqwest = { version = "0.11", features = ["json", "blocking"] }
 warp = "0.3"
+serde_json = "1.0"
+
+basinix_shared = { path = "../shared" }

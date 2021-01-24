@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
-enum Message {
+pub enum Message {
     EvalCommit(String),
 }

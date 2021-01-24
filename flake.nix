@@ -13,6 +13,10 @@
           rustfmt
           clippy
           elmPackages.elm
+          pkg-config
+        ];
+        buildInputs = with pkgs; [
+          openssl
         ];
         shellHook = ''
           test -f ~/.bashrc && source ~/.bashrc
