@@ -262,7 +262,7 @@ pub struct Commit {
     author: Author,
 
     #[serde(rename = "message")]
-    message: String,
+    message: Option<String>,
 
     #[serde(rename = "distinct")]
     distinct: bool,
@@ -586,7 +586,7 @@ pub struct BaseRepo {
     html_url: String,
 
     #[serde(rename = "description")]
-    description: String,
+    description: Option<String>,
 
     #[serde(rename = "fork")]
     fork: bool,
@@ -736,7 +736,7 @@ pub struct BaseRepo {
     watchers_count: i64,
 
     #[serde(rename = "language")]
-    language: String,
+    language: Option<String>,
 
     #[serde(rename = "has_issues")]
     has_issues: bool,
@@ -904,10 +904,35 @@ pub struct EventRepo {
     url: String,
 }
 
+// https://docs.github.com/en/developers/webhooks-and-events/github-event-types
 #[derive(Serialize, Deserialize)]
 pub enum EventType {
+    #[serde(rename = "CommitCommentEvent")]
+    CommitCommentEvent,
+
+    #[serde(rename = "CreateEvent")]
+    CreateEvent,
+
+    #[serde(rename = "DeleteEvent")]
+    DeleteEvent,
+
+    #[serde(rename = "ForkEvent")]
+    ForkEvent,
+
+    #[serde(rename = "GollumEvent")]
+    GollumEvent,
+
     #[serde(rename = "IssueCommentEvent")]
     IssueCommentEvent,
+
+    #[serde(rename = "IssuesEvent")]
+    IssuesEvent,
+
+    #[serde(rename = "MemberEvent")]
+    MemberEvent,
+
+    #[serde(rename = "PushEvent")]
+    PushEvent,
 
     #[serde(rename = "PullRequestEvent")]
     PullRequestEvent,
@@ -918,11 +943,14 @@ pub enum EventType {
     #[serde(rename = "PullRequestReviewEvent")]
     PullRequestReviewEvent,
 
-    #[serde(rename = "IssuesEvent")]
-    IssuesEvent,
+    #[serde(rename = "ReleaseEvent")]
+    ReleaseEvent,
 
-    #[serde(rename = "PushEvent")]
-    PushEvent,
+    #[serde(rename = "SponsorshipEvent")]
+    SponsorshipEvent,
+
+    #[serde(rename = "WatchEvent")]
+    WatchEvent,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -1010,4 +1038,7 @@ pub enum ReviewState {
 
     #[serde(rename = "commented")]
     Commented,
+
+    #[serde(rename = "changes_requested")]
+    ChangesRequested,
 }
