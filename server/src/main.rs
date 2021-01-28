@@ -1,5 +1,5 @@
 use warp::Filter;
-use std::os::unix::net::{UnixStream,UnixListener};
+use std::os::unix::net::UnixStream;
 use std::sync::mpsc;
 use std::thread;
 use std::time::Duration;
@@ -10,6 +10,13 @@ use github_producer::produce_github_pr_events;
 use basinix_shared::eval_events::EvalRequest;
 use chrono::Local;
 use std::io::Write;
+
+#[macro_use]
+extern crate diesel;
+extern crate serde;
+
+pub mod schema;
+pub mod models;
 
 const LOG_TARGET: &str = "basinix::server::main";
 
@@ -30,7 +37,7 @@ async fn main() {
     info!(target: LOG_TARGET, "Starting github polling thread");
     thread::Builder::new().name("github_producer".to_string()).spawn(move|| {
         produce_github_pr_events(tx)
-    });
+    }).unwrap();
 
     println!("waiting to receive");
     println!("{:?}", rx.recv().unwrap());
