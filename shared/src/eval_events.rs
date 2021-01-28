@@ -5,7 +5,8 @@ pub type PullRequestNum = u32;
 
 #[derive(Debug)]
 pub enum EvalRequest {
-    PullRequest(PullRequestNum, Vec<Commit>),
+    PullRequestOpened(PullRequestNum),
+    PushEvent(PullRequestNum),
 }
 
 

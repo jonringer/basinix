@@ -7,28 +7,28 @@ pub type Events = Vec<Event>;
 #[derive(Serialize, Deserialize)]
 pub struct Event {
     #[serde(rename = "id")]
-    id: String,
+    pub id: String,
 
     #[serde(rename = "type")]
-    event_type: EventType,
+    pub event_type: EventType,
 
     #[serde(rename = "actor")]
-    actor: Actor,
+    pub actor: Actor,
 
     #[serde(rename = "repo")]
-    repo: EventRepo,
+    pub repo: EventRepo,
 
     #[serde(rename = "payload")]
-    payload: Payload,
+    pub payload: Payload,
 
     #[serde(rename = "public")]
-    public: bool,
+    pub public: bool,
 
     #[serde(rename = "created_at")]
-    created_at: String,
+    pub created_at: String,
 
     #[serde(rename = "org")]
-    org: Actor,
+    pub org: Actor,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -963,6 +963,9 @@ pub enum Action {
 
     #[serde(rename = "opened")]
     Opened,
+
+    #[serde(rename = "started")]
+    Started,
 }
 
 #[derive(Serialize, Deserialize)]

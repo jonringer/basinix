@@ -9,6 +9,7 @@
       pkgs = nixpkgs.legacyPackages.${system};
       devEnv = pkgs.mkShell {
         nativeBuildInputs = with pkgs; [
+          diesel-cli
           cargo
           rustfmt
           clippy
@@ -17,10 +18,12 @@
         ];
         buildInputs = with pkgs; [
           openssl
+          sqlite
         ];
         shellHook = ''
           test -f ~/.bashrc && source ~/.bashrc
         '';
+        DATABASE_URL="/var/run/user/1000/basinix/test.db";
       };
     in rec {
         defaultPackage = devEnv;
