@@ -25,6 +25,10 @@ This is also meant to be exposed as a website similar to Hydra. However, there w
       - Probably optimize for lowest rebuild number (increase # of PRs able to be reviewed)
     - [ ] Accurately adjust (remove no-longer relevant, add new builds) to PRs getting push events
     - [ ] Detect "tests", and build those as well
+    - [ ] Nix garbage collection policies
+      - [ ] Retain "fixed-output-derivations" on a branch
+      - [ ] Retain all derivations on a branch
+      - [ ] "Archive", or keep everything
 - [ ] Web UI
   - [ ] Initial layout
   - [ ] Be able to view PR status
