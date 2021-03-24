@@ -11,10 +11,10 @@ This is also meant to be exposed as a website similar to Hydra. However, there w
 # Roadmap (Initial NixOS/nixpkgs support)
 
 - [ ] Server
-  - [ ] Ability to pull Github events
+  - [x] Ability to pull Github events
     - [x] Initial polling of api events
-    - [ ] Filter events relevant to needing a rebuild
-    - [ ] Deconflict with previous events
+    - [x] Filter events relevant to needing a rebuild
+    - [x] Deconflict with previous events
   - [ ] Building derivations
     - [ ] Initial Evaluation support
       - [ ] Verify PR didn't break nixpkgs evaluation

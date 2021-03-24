@@ -1,6 +1,6 @@
 use std::sync::mpsc::Sender;
 use basinix_shared::eval_events::EvalRequest;
-use basinix_shared::gh_events::Event;
+use basinix_shared::gh_events::{Event,EventType};
 use std::thread::sleep;
 use std::time::Duration;
 use log::{error,debug,info};
@@ -41,8 +41,12 @@ fn serialize_and_filter_events(response: Response, past_events: &mut HashSet<u64
             match serde_json::from_str::<Vec<Event>>(&body) {
                 Ok(parsed_json) => {
                     debug!(target: LOG_TARGET, "Successfully queried {} values", parsed_json.len());
-                    let (old_events, new_events): (Vec<Event>,Vec<Event>) = parsed_json
-                        .into_iter().partition(|event| past_events.contains(&event.id.parse::<u64>().unwrap()));
+                    let commit_changes = parsed_json
+                        .into_iter()
+                        .filter(|event| event.event_type == EventType::PushEvent
+                                || event.event_type == EventType::PullRequestEvent);
+                    let (old_events, new_events): (Vec<Event>,Vec<Event>) = commit_changes
+                        .partition(|event| past_events.contains(&event.id.parse::<u64>().unwrap()));
 
                     // TODO: configure this value
                     // Only the last 100 events are really useful, using 1000 just to avoid cache

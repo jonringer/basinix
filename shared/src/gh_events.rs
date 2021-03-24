@@ -905,7 +905,7 @@ pub struct EventRepo {
 }
 
 // https://docs.github.com/en/developers/webhooks-and-events/github-event-types
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, PartialEq)]
 pub enum EventType {
     #[serde(rename = "CommitCommentEvent")]
     CommitCommentEvent,
