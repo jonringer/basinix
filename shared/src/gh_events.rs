@@ -966,6 +966,9 @@ pub enum Action {
 
     #[serde(rename = "started")]
     Started,
+
+    #[serde(rename = "reopened")]
+    Reopened,
 }
 
 #[derive(Serialize, Deserialize)]
