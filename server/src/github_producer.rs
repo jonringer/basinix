@@ -11,27 +11,46 @@ use std::collections::HashSet;
 const LOG_TARGET: &str = "basinix::server::github_polling";
 
 pub fn produce_github_pr_events(gh_sender: Sender<EvalRequest>) {
-    let sleep_duration = Duration::from_secs(1);
+    let mut sleep_seconds = 5;
     let request_client = Client::new();
 
     let mut past_events: HashSet<u64> = HashSet::with_capacity(1000);
 
     loop {
-        let request = request_client
+        let mut request = request_client
             .get("https://api.github.com/repos/nixos/nixpkgs/events?per_page=100")
             .header("User-Agent", "reqwest")
             .header("Accept", "application/vnd.github.v3+json");
+
+        if let Ok(github_token) = std::env::var("GITHUB_TOKEN") {
+            debug!(target: LOG_TARGET, "Using github token for polling events");
+            request = request.header("Authorization", format!("token {}", github_token));
+        }
 
         info!(target: LOG_TARGET, "Polling github activity");
         match request.send() {
             Ok(response) => {
                 let events = serialize_and_filter_events(response, &mut past_events);
+
+                // Adjust polling rate based on successful retrievals
+                // These rates will also only reflect push events, so the number of new
+                // events may be much less than the total pay load
+                if events.len() < 5 {
+                    debug!(target: LOG_TARGET, "Only {} new events returned. Doubling current sleep time of {}s", events.len(), sleep_seconds);
+                    // TODO: Configure max wait time between polls
+                    sleep_seconds = std::cmp::min(sleep_seconds * 2, 600);
+                } else if events.len() > 15 {
+                    debug!(target: LOG_TARGET, "More than 15 new events returned. Halving sleep time {}", sleep_seconds);
+                    // TODO: Configure minimum time between polls
+                    sleep_seconds = std::cmp::max(sleep_seconds / 2, 5);
+                }
             },
             Err(err) => {
                 error!("Error attempting to contact github: {}", err);
             }
         }
-        sleep(sleep_duration);
+        debug!(target: LOG_TARGET, "Sleeping for {} seconds", sleep_seconds);
+        sleep(Duration::from_secs(sleep_seconds));
     }
 }
 
@@ -52,6 +71,7 @@ fn serialize_and_filter_events(response: Response, past_events: &mut HashSet<u64
                     // Only the last 100 events are really useful, using 1000 just to avoid cache
                     // churn
                     if past_events.len() > 800 {
+                        debug!(target: LOG_TARGET, "Clearing old event cache");
                         past_events.clear();
                         old_events.iter()
                             .for_each(|event| { past_events.insert(event.id.parse::<u64>().unwrap()); ()});
@@ -63,7 +83,7 @@ fn serialize_and_filter_events(response: Response, past_events: &mut HashSet<u64
                     return new_events;
                 }
                 Err(err) => {
-                    error!("Unable to parse response from github to json: {:?}", err);
+                    error!(target: LOG_TARGET, "Unable to parse response from github to json: {:?}", err);
 
                     let mut tmpfile = std::env::temp_dir();
                     tmpfile.push("basinix");
@@ -72,7 +92,7 @@ fn serialize_and_filter_events(response: Response, past_events: &mut HashSet<u64
                     tmpfile.push(format!("{}.txt", Local::now().to_rfc3339()));
                     let tmppath = tmpfile.as_path();
 
-                    error!("Writing contents to {}", &tmpfile.display());
+                    error!(target: LOG_TARGET, "Writing contents to {}", &tmpfile.display());
                     std::fs::write(&tmppath, body.as_bytes()).unwrap();
                 }
             }
@@ -81,5 +101,6 @@ fn serialize_and_filter_events(response: Response, past_events: &mut HashSet<u64
             error!("Unable to parse response from github: {:?}", err);
         }
     }
+
     return Vec::<Event>::new();
 }
