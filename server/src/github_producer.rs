@@ -1,6 +1,6 @@
 use std::sync::mpsc::Sender;
 use basinix_shared::eval_events::EvalRequest;
-use basinix_shared::gh_events::{Event,EventType};
+use basinix_shared::github::repo_events::{Event,EventType};
 use std::thread::sleep;
 use std::time::Duration;
 use log::{error,debug,info};
