@@ -3,5 +3,6 @@ members = [
   "server",
   "shared",
   "worker",
+  "evaluator",
 ]
 
