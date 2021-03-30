@@ -36,7 +36,7 @@ if [ -z "${1:-}" ]; then
         echoerr ""
         usage
 fi
-rev="$1"
+PR_NUMBER="$1"
 
 #if test $(git cat-file --path="$NIXPKGS_PATH" -t commit) != commit; then
 #        echoerr "The rev \'$rev\' was not a valid commit"
@@ -53,7 +53,9 @@ worktreedir=$(mktemp -d)
 #trap "rm -rf $worktreedir" EXIT
 pushd "$NIXPKGS_PATH"
 
-git worktree add $worktreedir $rev
+git -c fetch.prune=false fetch --force https://github.com/NixOS/nixpkgs pull/$PR_NUMBER/head:refs/evaluator
+
+git worktree add $worktreedir refs/evaluator
 
 cd $worktreedir
 
