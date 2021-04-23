@@ -23,7 +23,7 @@ pub fn get_pr_info(pr_number: u64) {
     info!(target: LOG_TARGET, "Querying PR #{}", pr_number);
     match request.send() {
         Ok(response) => {
-            let pr_info = serialize_repsonse(response);
+            let pr_info = serialize_response(response);
         },
         Err(err) => {
             error!("Error attempting to contact github: {}", err);
@@ -46,10 +46,10 @@ fn serialize_response(response: Response) -> PullRequest {
                     tmpfile.push("failed_json_parse");
                     std::fs::create_dir_all(&tmpfile.as_path());
                     tmpfile.push(format!("{}.txt", Local::now().to_rfc3339()));
-                    let tmppath = tmpfile.as_path();
+                    let tmp_path = tmpfile.as_path;
 
                     error!(target: LOG_TARGET, "Writing contents to {}", &tmpfile.display());
-                    std::fs::write(&tmppath, body.as_bytes()).unwrap();
+                    std::fs::write(&tmp_path, body.as_bytes()).unwrap();
                 }
             }
         },

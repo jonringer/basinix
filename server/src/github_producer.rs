@@ -4,13 +4,13 @@ use basinix_shared::github::repo_events::{Event,EventType};
 use std::thread::sleep;
 use std::time::Duration;
 use log::{error,debug,info};
-use reqwest::blocking::{Client,Response,Request,RequestBuilder};
+use reqwest::blocking::{Client,Response};
 use chrono::Local;
 use std::collections::HashSet;
 
 const LOG_TARGET: &str = "basinix::server::github_polling";
 
-pub fn produce_github_pr_events(gh_sender: Sender<EvalRequest>) {
+pub fn produce_github_pr_events(_gh_sender: Sender<EvalRequest>) {
     let mut sleep_seconds = 5;
     let request_client = Client::new();
 
@@ -88,7 +88,7 @@ fn serialize_and_filter_events(response: Response, past_events: &mut HashSet<u64
                     let mut tmpfile = std::env::temp_dir();
                     tmpfile.push("basinix");
                     tmpfile.push("failed_json_parse");
-                    std::fs::create_dir_all(&tmpfile.as_path());
+                    std::fs::create_dir_all(&tmpfile.as_path()).expect(&format!("Unable to create directory {:?}", &tmpfile.as_path()));
                     tmpfile.push(format!("{}.txt", Local::now().to_rfc3339()));
                     let tmppath = tmpfile.as_path();
 

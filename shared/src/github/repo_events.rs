@@ -571,7 +571,7 @@ pub struct BaseRepo {
     node_id: String,
 
     #[serde(rename = "name")]
-    name: PurpleName,
+    name: String,
 
     #[serde(rename = "full_name")]
     full_name: String,
@@ -793,7 +793,7 @@ pub struct License {
     name: String,
 
     #[serde(rename = "spdx_id")]
-    spdx_id: SpdxId,
+    spdx_id: String,
 
     #[serde(rename = "url")]
     url: Option<String>,
@@ -1011,30 +1011,6 @@ pub enum IssueState {
 
     #[serde(rename = "open")]
     Open,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum LicenseNodeId {
-    #[serde(rename = "MDc6TGljZW5zZTEz")]
-    MDc6TGljZw5ZZtEz,
-
-    #[serde(rename = "MDc6TGljZW5zZTA=")]
-    MDc6TGljZw5ZZta,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum SpdxId {
-    #[serde(rename = "MIT")]
-    Mit,
-
-    #[serde(rename = "NOASSERTION")]
-    Noassertion,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum PurpleName {
-    #[serde(rename = "nixpkgs")]
-    Nixpkgs,
 }
 
 #[derive(Serialize, Deserialize)]

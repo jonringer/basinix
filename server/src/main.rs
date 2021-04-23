@@ -3,7 +3,7 @@ use std::os::unix::net::UnixStream;
 use std::sync::mpsc;
 use std::thread;
 use std::time::Duration;
-use log::{debug, info, error};
+use log::info;
 use env_logger;
 mod github_producer;
 use github_producer::produce_github_pr_events;
@@ -44,7 +44,7 @@ async fn main() {
     let sleep_time = Duration::from_secs(20);
     thread::sleep(sleep_time);
 
-    let stream = UnixStream::connect("/run/user/1000/basinix/basinix.sock").unwrap();
+    let _stream = UnixStream::connect("/run/user/1000/basinix/basinix.sock").unwrap();
 
     // GET /hello/warp => 200 OK with body "Hello, warp!"
     let hello = warp::path!("hello" / String)
