@@ -6,6 +6,7 @@
   outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
     let
+      inherit (pkgs.darwin.apple_sdk.frameworks) Security;
       pkgs = nixpkgs.legacyPackages.${system};
       devEnv = pkgs.mkShell {
         nativeBuildInputs = with pkgs; [
@@ -19,7 +20,7 @@
         buildInputs = with pkgs; [
           openssl
           sqlite
-        ];
+        ] ++ lib.optionals stdenv.isDarwin [ Security ];
         shellHook = ''
           test -f ~/.bashrc && source ~/.bashrc
         '';
