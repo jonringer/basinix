@@ -55,7 +55,7 @@ pub struct Actor {
 #[derive(Serialize, Deserialize)]
 pub struct Payload {
     #[serde(rename = "action")]
-    action: Option<Action>,
+    pub action: Option<Action>,
 
     #[serde(rename = "issue")]
     issue: Option<Issue>,
@@ -73,25 +73,25 @@ pub struct Payload {
     distinct_size: Option<i64>,
 
     #[serde(rename = "ref")]
-    payload_ref: Option<String>,
+    pub payload_ref: Option<String>,
 
     #[serde(rename = "head")]
-    head: Option<String>,
+    pub head: Option<String>,
 
     #[serde(rename = "before")]
-    before: Option<String>,
+    pub before: Option<String>,
 
     #[serde(rename = "commits")]
     commits: Option<Vec<Commit>>,
 
     #[serde(rename = "pull_request")]
-    pull_request: Option<PayloadPullRequest>,
+    pub pull_request: Option<PayloadPullRequest>,
 
     #[serde(rename = "review")]
     review: Option<Review>,
 
     #[serde(rename = "number")]
-    number: Option<i64>,
+    pub number: Option<u64>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -493,10 +493,10 @@ pub struct PayloadPullRequest {
     statuses_url: String,
 
     #[serde(rename = "head")]
-    head: Head,
+    pub head: Head,
 
     #[serde(rename = "base")]
-    base: Base,
+    pub base: Base,
 
     #[serde(rename = "_links")]
     links: PullRequestLinks,
@@ -550,7 +550,7 @@ pub struct Base {
     label: String,
 
     #[serde(rename = "ref")]
-    base_ref: String,
+    pub base_ref: String,
 
     #[serde(rename = "sha")]
     sha: String,

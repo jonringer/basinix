@@ -37,7 +37,7 @@ fn serialize_response(response: Response) -> PullRequest {
             match serde_json::from_str::<PullRequest>(&body) {
                 Ok(parsed_json) => {
                     parsed_json
-                }
+                },
                 Err(err) => {
                     error!(target: LOG_TARGET, "Unable to parse response from github to json: {:?}", err);
 

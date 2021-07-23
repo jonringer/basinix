@@ -1,15 +1,14 @@
 use warp::Filter;
-use std::os::unix::net::UnixStream;
 use std::sync::mpsc;
 use std::thread;
-use std::time::Duration;
 use log::info;
 use env_logger;
 mod github_producer;
 use github_producer::produce_github_pr_events;
-use basinix_shared::eval_events::EvalRequest;
+use basinix_shared::types::Message;
 use chrono::Local;
 use std::io::Write;
+use basinix_evaluator::eval_events;
 
 #[macro_use]
 extern crate diesel;
@@ -33,18 +32,18 @@ async fn main() {
             )
         }).init();
 
-    let (tx, rx) = mpsc::channel::<EvalRequest>();
-    info!(target: LOG_TARGET, "Starting github polling thread");
-    thread::Builder::new().name("github_producer".to_string()).spawn(move|| {
-        produce_github_pr_events(tx)
+    let (tx, rx) = mpsc::channel::<Message>();
+
+    // TODO: Allow for evaluator to exist on another machine
+    info!(target: LOG_TARGET, "Starting evaluation thread");
+    thread::Builder::new().name("Evalutor".to_string()).spawn(move|| {
+        eval_events(rx);
     }).unwrap();
 
-    println!("waiting to receive");
-    println!("{:?}", rx.recv().unwrap());
-    let sleep_time = Duration::from_secs(20);
-    thread::sleep(sleep_time);
-
-    let _stream = UnixStream::connect("/run/user/1000/basinix/basinix.sock").unwrap();
+    info!(target: LOG_TARGET, "Starting github polling thread");
+    thread::Builder::new().name("github_producer".to_string()).spawn(move|| {
+        produce_github_pr_events(tx);
+    }).unwrap();
 
     // GET /hello/warp => 200 OK with body "Hello, warp!"
     let hello = warp::path!("hello" / String)

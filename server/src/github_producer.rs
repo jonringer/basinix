@@ -1,6 +1,7 @@
 use std::sync::mpsc::Sender;
-use basinix_shared::eval_events::EvalRequest;
-use basinix_shared::github::repo_events::{Event,EventType};
+use basinix_shared::types::{PullRequestInfo, PushInfo};
+use basinix_shared::types::Message::{self, EvalPullRequest, EvalPush, PullRequestClosed};
+use basinix_shared::github::repo_events::{Event, EventType, Action};
 use std::thread::sleep;
 use std::time::Duration;
 use log::{error,debug,info};
@@ -10,7 +11,33 @@ use std::collections::HashSet;
 
 const LOG_TARGET: &str = "basinix::server::github_polling";
 
-pub fn produce_github_pr_events(_gh_sender: Sender<EvalRequest>) {
+fn gh_event_to_eval_event(gh_event: Event) -> Option<Message> {
+    match gh_event.event_type {
+        EventType::PullRequestEvent => {
+            match gh_event.payload.action.unwrap() {
+                Action::Closed => {
+                    Some(PullRequestClosed(gh_event.payload.number.unwrap()))
+                },
+                _ => {
+                    Some(EvalPullRequest( PullRequestInfo {
+                        number: gh_event.payload.number.unwrap(),
+                        base_branch: gh_event.payload.pull_request.unwrap().base.base_ref,
+                    }))
+                },
+            }
+        },
+        EventType::PushEvent => {
+            Some(EvalPush(PushInfo{
+                push_ref: gh_event.payload.payload_ref.unwrap(),
+                before: gh_event.payload.before.unwrap(),
+                head: gh_event.payload.head.unwrap(),
+            }))
+        },
+        _ => None
+    }
+}
+
+pub fn produce_github_pr_events(sender: Sender<Message>) {
     let mut sleep_seconds = 5;
     let request_client = Client::new();
 
@@ -38,11 +65,16 @@ pub fn produce_github_pr_events(_gh_sender: Sender<EvalRequest>) {
                 if events.len() < 5 {
                     debug!(target: LOG_TARGET, "Only {} new events returned. Doubling current sleep time of {}s", events.len(), sleep_seconds);
                     // TODO: Configure max wait time between polls
-                    sleep_seconds = std::cmp::min(sleep_seconds * 2, 600);
+                    sleep_seconds = std::cmp::min(sleep_seconds * 2, 300);
                 } else if events.len() > 15 {
                     debug!(target: LOG_TARGET, "More than 15 new events returned. Halving sleep time {}", sleep_seconds);
                     // TODO: Configure minimum time between polls
                     sleep_seconds = std::cmp::max(sleep_seconds / 2, 5);
+                }
+
+                // send events to evaluator
+                for event in events {
+                    sender.send(gh_event_to_eval_event(event).unwrap());
                 }
             },
             Err(err) => {
