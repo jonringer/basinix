@@ -16,6 +16,10 @@ This is also meant to be exposed as a website similar to Hydra. However, there w
     - [x] Filter events relevant to needing a rebuild
     - [x] Deconflict with previous events
   - [ ] Building derivations
+    - [ ] Nixpkgs control
+      - [ ] Create worktrees for each PR
+      - [ ] Update refs on push events
+        - [ ] Build and evaluate difference between commits
     - [ ] Initial Evaluation support
       - [ ] Verify PR didn't break nixpkgs evaluation
         - [ ] support `allowAliases = false;` scenario
