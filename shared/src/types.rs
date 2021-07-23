@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -6,7 +6,7 @@ pub enum NixOSBranch {
     Master,
     Staging,
     StagingNext,
-    Other(String)
+    Other(String),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

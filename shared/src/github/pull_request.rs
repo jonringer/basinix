@@ -12,8 +12,8 @@
 // }
 
 use serde;
-use serde_json;
 use serde::{Deserialize, Serialize};
+use serde_json;
 
 #[derive(Serialize, Deserialize)]
 pub struct PullRequest {

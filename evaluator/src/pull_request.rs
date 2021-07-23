@@ -1,8 +1,8 @@
 use basinix_shared::eval_events::EvalRequest;
 use basinix_shared::github::PullRequest;
-use log::{error,debug,info};
-use reqwest::blocking::{Client,Response,Request,RequestBuilder};
 use chrono::Local;
+use log::{debug, error, info};
+use reqwest::blocking::{Client, Request, RequestBuilder, Response};
 use std::collections::HashSet;
 
 const LOG_TARGET: &str = "basinix::server::github_polling";
@@ -16,7 +16,10 @@ pub fn get_pr_info(pr_number: u64) {
         .header("Accept", "application/vnd.github.v3+json");
 
     if let Ok(github_token) = std::env::var("GITHUB_TOKEN") {
-        debug!(target: LOG_TARGET, "Using github token for querying pull request #{}", pr_number);
+        debug!(
+            target: LOG_TARGET,
+            "Using github token for querying pull request #{}", pr_number
+        );
         request = request.header("Authorization", format!("token {}", github_token));
     }
 
@@ -24,7 +27,7 @@ pub fn get_pr_info(pr_number: u64) {
     match request.send() {
         Ok(response) => {
             let pr_info = serialize_response(response);
-        },
+        }
         Err(err) => {
             error!("Error attempting to contact github: {}", err);
         }
@@ -33,24 +36,27 @@ pub fn get_pr_info(pr_number: u64) {
 
 fn serialize_response(response: Response) -> PullRequest {
     match response.text() {
-        Ok(body) => {
-            match serde_json::from_str::<PullRequest>(&body) {
-                Ok(parsed_json) => {
-                    parsed_json
-                },
-                Err(err) => {
-                    error!(target: LOG_TARGET, "Unable to parse response from github to json: {:?}", err);
+        Ok(body) => match serde_json::from_str::<PullRequest>(&body) {
+            Ok(parsed_json) => parsed_json,
+            Err(err) => {
+                error!(
+                    target: LOG_TARGET,
+                    "Unable to parse response from github to json: {:?}", err
+                );
 
-                    let mut tmpfile = std::env::temp_dir();
-                    tmpfile.push("basinix");
-                    tmpfile.push("failed_json_parse");
-                    std::fs::create_dir_all(&tmpfile.as_path());
-                    tmpfile.push(format!("{}.txt", Local::now().to_rfc3339()));
-                    let tmp_path = tmpfile.as_path;
+                let mut tmpfile = std::env::temp_dir();
+                tmpfile.push("basinix");
+                tmpfile.push("failed_json_parse");
+                std::fs::create_dir_all(&tmpfile.as_path());
+                tmpfile.push(format!("{}.txt", Local::now().to_rfc3339()));
+                let tmp_path = tmpfile.as_path;
 
-                    error!(target: LOG_TARGET, "Writing contents to {}", &tmpfile.display());
-                    std::fs::write(&tmp_path, body.as_bytes()).unwrap();
-                }
+                error!(
+                    target: LOG_TARGET,
+                    "Writing contents to {}",
+                    &tmpfile.display()
+                );
+                std::fs::write(&tmp_path, body.as_bytes()).unwrap();
             }
         },
         Err(err) => {

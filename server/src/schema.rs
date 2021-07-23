@@ -7,4 +7,3 @@ table! {
         url -> Text,
     }
 }
-

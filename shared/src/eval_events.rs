@@ -8,5 +8,3 @@ pub enum EvalRequest {
     PullRequestOpened(PullRequestNum),
     PushEvent(PullRequestNum),
 }
-
-

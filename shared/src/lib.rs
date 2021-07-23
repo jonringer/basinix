@@ -1,5 +1,5 @@
-pub mod github;
 pub mod eval_events;
+pub mod github;
 pub mod types;
 
 #[cfg(test)]

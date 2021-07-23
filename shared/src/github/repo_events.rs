@@ -1,5 +1,5 @@
-use serde::{Serialize, Deserialize};
 use serde;
+use serde::{Deserialize, Serialize};
 use serde_json;
 
 pub type Events = Vec<Event>;
