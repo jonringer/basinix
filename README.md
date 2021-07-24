@@ -15,10 +15,16 @@ This is also meant to be exposed as a website similar to Hydra. However, there w
     - [x] Initial polling of api events
     - [x] Filter events relevant to needing a rebuild
     - [x] Deconflict with previous events
+  - [ ] Ability to configure basinix
+    - [ ] Cache directory: nixpkgs checkout and pr worktrees
+    - [ ] Workers:
+      - [ ] Number of threads, number of workers
+      - [ ] (Optional) Attempt to do cgroups
+        - [ ] Set cpu and memory limits
   - [ ] Building derivations
     - [ ] Nixpkgs control
       - [ ] Create worktrees for each PR
-      - [ ] Update refs on push events
+      - [ ] Update refs (e.g. master branch) on push events
         - [ ] Build and evaluate difference between commits
     - [ ] Initial Evaluation support
       - [ ] Verify PR didn't break nixpkgs evaluation
@@ -52,3 +58,14 @@ This is also meant to be exposed as a website similar to Hydra. However, there w
 - [ ] Packaging
   - [ ] Expose nix modules
 
+# Future Features
+
+- [ ] Mult-platform support (unlikely to happen unless someone donates hardware)
+  - [ ] Support remote host workers
+  - [ ] aarch64-linux
+  - [ ] aarch64-darwin
+  - [ ] x86_64-darwin
+- [ ] Support for systemFeatures and related configuration
+  - [ ] Heterogenous cpu and memory configurations
+    - [ ] nixos-test
+    - [ ] big-parallel
