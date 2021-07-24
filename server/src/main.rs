@@ -6,6 +6,7 @@ use log::{debug, info};
 use env_logger;
 mod github_producer;
 use github_producer::produce_github_pr_events;
+use basinix_shared::read_config;
 use basinix_shared::types::Message;
 use chrono::Local;
 use std::io::Write;
@@ -14,6 +15,7 @@ use basinix_evaluator::eval_events;
 extern crate serde;
 
 pub mod models;
+pub mod cli;
 
 const LOG_TARGET: &str = "basinix::server::main";
 
@@ -30,6 +32,11 @@ async fn main() {
             )
         }).init();
 
+    
+    let m = cli::build_cli().get_matches();
+    
+    let global_config = read_config();
+
     debug!(target: LOG_TARGET, "Creating databse connection pool");
     let pool = basinix_shared::db::create_connection_pool().await.expect("Unable to create database pool.");
     debug!(target: LOG_TARGET, "Checking if database needs to be initialized");
@@ -40,7 +47,7 @@ async fn main() {
     // TODO: Allow for evaluator to exist on another machine
     info!(target: LOG_TARGET, "Starting evaluation thread");
     thread::Builder::new().name("Evalutor".to_string()).spawn(move|| {
-        eval_events(rx);
+        eval_events(rx, &global_config);
     }).unwrap();
 
     info!(target: LOG_TARGET, "Starting github polling thread");
@@ -56,4 +63,3 @@ async fn main() {
         .run(([127, 0, 0, 1], 3030))
         .await
 }
-

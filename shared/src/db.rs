@@ -9,7 +9,7 @@ use sqlx::Executor;
 
 pub async fn init_database(pool: &sqlx::Pool<sqlx::Sqlite>) -> Result<(), sqlx::Error> {
     let branch_table =
-        sqlx::query!("SELECT name FROM sqlite_master WHERE type='table' AND name='branch';")
+        sqlx::query!("SELECT name FROM sqlite_master WHERE type='table' AND name='branches';")
             .fetch_one(pool)
             .await;
     match branch_table {

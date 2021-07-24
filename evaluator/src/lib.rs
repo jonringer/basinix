@@ -1,10 +1,51 @@
+use basinix_shared::read_config;
+use basinix_shared::types::GlobalConfig;
 use basinix_shared::types::Message::{self, EvalPullRequest, EvalPush, PullRequestClosed};
 use log::{debug, error, info};
+use std::fs;
+use std::process::Command;
 use std::sync::mpsc::Receiver;
+
+pub mod pull_request;
 
 const LOG_TARGET: &str = "basinix::evaluator";
 
-pub fn eval_events(recv: Receiver<Message>) {
+fn ensure_nixpkgs_exists(config: &GlobalConfig) {
+    let nixpkgs_path = &config.nixpkgs_dir.as_path();
+    let nixpkgs_path_str = nixpkgs_path.to_str().unwrap();
+
+    if !nixpkgs_path.exists() {
+        info!("Creating nixpkgs checkout at {}", nixpkgs_path_str);
+        fs::create_dir_all(nixpkgs_path).expect(&format!(
+            "Unable to create nixpkgs directory at: {}",
+            nixpkgs_path_str
+        ));
+
+        if !Command::new("git")
+            .args(&[
+                "clone",
+                "git@github.com:NixOS/nixpkgs.git",
+                nixpkgs_path_str,
+            ])
+            .status()
+            .unwrap()
+            .success()
+        {
+            error!("Failed to clone nixpkgs repo to {}", nixpkgs_path_str);
+            error!("Please ensure that XDG_CACHE_DIR is write-able");
+            std::process::exit(1);
+        }
+    }
+}
+
+pub fn eval_events(recv: Receiver<Message>, config: &GlobalConfig) {
+    debug!(target: LOG_TARGET, "Ensuring nixpkgs checkout");
+    ensure_nixpkgs_exists(config);
+
+    // This is used to check whether or not we need to update the base branch
+    // and determine all of the drv paths
+    let mut base_revs: std::collections::HashMap<String, String> = std::collections::HashMap::new();
+
     debug!(target: LOG_TARGET, "Starting evaluator loop");
     loop {
         match recv.recv() {
@@ -16,6 +57,7 @@ pub fn eval_events(recv: Receiver<Message>) {
             }
             Ok(EvalPullRequest(pr)) => {
                 info!("Evaluating pull request: {}", pr.number);
+                pull_request::eval_pr(&config, pr.number, &mut base_revs);
             }
             Ok(PullRequestClosed(pr)) => {
                 info!("Pull request was closed: {}", pr);
