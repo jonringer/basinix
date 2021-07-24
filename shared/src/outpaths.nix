@@ -12,14 +12,16 @@ let
     # Compromise: accuracy vs. resources needed for evaluation.
     {
       supportedSystems = [
-        "aarch64-linux"
+        # Currently don't have any builders for aarch64 or darwin, so don't build them
+        #"aarch64-linux"
+        #"x86_64-darwin"
+
         "x86_64-linux"
-        "x86_64-darwin"
       ];
 
       nixpkgsArgs = {
         config = {
-          allowBroken = true;
+          allowBroken = false;
           allowUnfree = true;
           allowInsecurePredicate = x: true;
           checkMeta = checkMeta;
