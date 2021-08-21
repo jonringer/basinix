@@ -1,7 +1,8 @@
 use warp::Filter;
 use std::sync::mpsc;
 use std::thread;
-use log::info;
+use std::time::Duration;
+use log::{debug, info};
 use env_logger;
 mod github_producer;
 use github_producer::produce_github_pr_events;
@@ -10,11 +11,8 @@ use chrono::Local;
 use std::io::Write;
 use basinix_evaluator::eval_events;
 
-#[macro_use]
-extern crate diesel;
 extern crate serde;
 
-pub mod schema;
 pub mod models;
 
 const LOG_TARGET: &str = "basinix::server::main";
@@ -31,6 +29,11 @@ async fn main() {
                 record.args()
             )
         }).init();
+
+    debug!(target: LOG_TARGET, "Creating databse connection pool");
+    let pool = basinix_shared::db::create_connection_pool().await.expect("Unable to create database pool.");
+    debug!(target: LOG_TARGET, "Checking if database needs to be initialized");
+    basinix_shared::db::init_database(&pool).await.expect("Unable to create database.");
 
     let (tx, rx) = mpsc::channel::<Message>();
 

@@ -10,7 +10,6 @@
       pkgs = nixpkgs.legacyPackages.${system};
       devEnv = pkgs.mkShell {
         nativeBuildInputs = with pkgs; [
-          diesel-cli
           cargo
           rustfmt
           clippy
@@ -23,6 +22,8 @@
         ] ++ lib.optionals stdenv.isDarwin [ Security ];
         shellHook = ''
           test -f ~/.bashrc && source ~/.bashrc
+          # needed for sqlx to do query!
+          export DATABASE_URL=sqlite::memory:
         '';
         DATABASE_URL="/var/run/user/1000/basinix/test.db";
       };

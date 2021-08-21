@@ -1,6 +1,7 @@
 .direnv/
 .idea
 .vscode
+*.db*
 
 # Added by cargo
 
