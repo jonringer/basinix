@@ -17,4 +17,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build
-      run: DATABASE_URL=sqlite::memory: cargo build --verbose
+      run: DATABASE_URL="sqlite::memory:" cargo build --verbose
