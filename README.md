@@ -23,13 +23,13 @@ This is also meant to be exposed as a website similar to Hydra. However, there w
         - [ ] Set cpu and memory limits
   - [ ] Building derivations
     - [ ] Nixpkgs control
-      - [ ] Create worktrees for each PR
+      - [x] Create worktrees for each PR
       - [ ] Update refs (e.g. master branch) on push events
         - [ ] Build and evaluate difference between commits
-    - [ ] Initial Evaluation support
-      - [ ] Verify PR didn't break nixpkgs evaluation
+    - [x] Initial Evaluation support
+      - [x] Verify PR didn't break nixpkgs evaluation
         - [ ] support `allowAliases = false;` scenario
-      - [ ] Determine new or changed attrs
+      - [x] Determine new or changed attrs
     - [ ] Deconflict with previous builds (successful or unsuccessful)
     - [ ] Create priority queue of nix builds needed to be complete
       - Probably optimize for lowest rebuild number (increase # of PRs able to be reviewed)
