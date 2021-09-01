@@ -61,6 +61,34 @@ impl FromStr for NixOSBranch {
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
+pub enum Arch {
+    X86,
+    X86_64,
+    Aarch64,
+}
+
+#[derive(Serialize, Deserialize, PartialEq, Debug)]
+pub enum System {
+    Linux,
+    Darwin,
+}
+
+#[derive(Serialize, Deserialize, PartialEq, Debug)]
+pub struct Platform {
+    pub arch: Arch,
+    pub system: System,
+}
+
+#[derive(Serialize, Deserialize, PartialEq, Debug)]
+pub struct BuildRequest {
+    pub platform: Platform, // e.g. Platform { arch = X86_64, system = Linux }
+    pub rev: String,        // Git commit sha
+    pub attr: String,       // Attr to "hydrate" the drv
+    pub drv: String,        // e.g. /nix/store/e1qr....-package.drv
+    pub build_count: u32,   // to determine build priority
+}
+
+#[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct PushInfo {
     pub push_ref: String,
     pub before: String,
@@ -73,6 +101,7 @@ pub struct PullRequestInfo {
     pub base_branch: String,
 }
 
+// TODO: Message is a terrible name
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub enum Message {
     EvalPush(PushInfo),
@@ -85,8 +114,10 @@ pub struct FileConfig {
     pub cache_dir: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Debug)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct GlobalConfig {
+    pub cores_per_build: u32,
+    pub parallel_builds: u64,
     pub cache_dir: PathBuf,
     pub nixpkgs_dir: PathBuf,
     pub worktree_dir: PathBuf,
@@ -144,6 +175,10 @@ impl GlobalConfig {
         }
 
         GlobalConfig {
+            // TODO: allow for coures and build number to be configured
+            // TODO: allow for coures and build number to be configured per host
+            cores_per_build: 2,
+            parallel_builds: 64,
             cache_dir: cache_dir,
             nixpkgs_dir: nixpkgs_dir,
             worktree_dir: worktree_dir,

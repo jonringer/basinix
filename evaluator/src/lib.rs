@@ -1,16 +1,16 @@
 use basinix_shared::read_config;
-use basinix_shared::types::GlobalConfig;
+use basinix_shared::types::{BuildRequest, GlobalConfig};
 use basinix_shared::types::Message::{self, EvalPullRequest, EvalPush, PullRequestClosed};
 use log::{debug, error, info};
 use std::fs;
 use std::process::Command;
-use std::sync::mpsc::Receiver;
+use std::sync::mpsc::{Receiver, Sender};
 
 pub mod pull_request;
 
 const LOG_TARGET: &str = "basinix::evaluator";
 
-fn ensure_nixpkgs_exists(config: &GlobalConfig) {
+fn ensure_nixpkgs_exists(config: GlobalConfig) {
     let nixpkgs_path = &config.nixpkgs_dir.as_path();
     let nixpkgs_path_str = nixpkgs_path.to_str().unwrap();
 
@@ -36,11 +36,34 @@ fn ensure_nixpkgs_exists(config: &GlobalConfig) {
             std::process::exit(1);
         }
     }
+
+    Command::new("git")
+        .current_dir(nixpkgs_path_str)
+        .args(&[
+            "-c",
+            "fetch.prune=false",
+            "fetch",
+            "origin",
+        ])
+        .status()
+        .unwrap()
+        .success();
+
+    // We want to get into detached HEAD, as worktrees may already have a branch or commit checkedout
+    Command::new("git")
+        .current_dir(nixpkgs_path_str)
+        .args(&[
+            "checkout",
+            "origin/master^",
+        ])
+        .status()
+        .unwrap()
+        .success();
 }
 
-pub fn eval_events(recv: Receiver<Message>, config: &GlobalConfig) {
+pub fn eval_events(recv: Receiver<Message>, build_sender: Sender<BuildRequest>, config: GlobalConfig) {
     debug!(target: LOG_TARGET, "Ensuring nixpkgs checkout");
-    ensure_nixpkgs_exists(config);
+    ensure_nixpkgs_exists(config.clone());
 
     // This is used to check whether or not we need to update the base branch
     // and determine all of the drv paths
@@ -57,7 +80,7 @@ pub fn eval_events(recv: Receiver<Message>, config: &GlobalConfig) {
             }
             Ok(EvalPullRequest(pr)) => {
                 info!("Evaluating pull request: {}", pr.number);
-                pull_request::eval_pr(&config, pr.number, &mut base_revs);
+                pull_request::eval_pr(&config, build_sender.clone(), pr.number, &mut base_revs);
             }
             Ok(PullRequestClosed(pr)) => {
                 info!("Pull request was closed: {}", pr);
