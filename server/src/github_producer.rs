@@ -74,7 +74,9 @@ pub fn produce_github_pr_events(sender: Sender<Message>) {
 
                 // send events to evaluator
                 for event in events {
-                    sender.send(gh_event_to_eval_event(event).unwrap());
+                    sender.send(gh_event_to_eval_event(event)
+                        .expect("Unable to serialize event"))
+                        .expect("Unable to send eval event to evaluation consumer");
                 }
             }
             Err(err) => {
@@ -111,13 +113,11 @@ fn serialize_and_filter_events(response: Response, past_events: &mut HashSet<u64
                         past_events.clear();
                         old_events.iter().for_each(|event| {
                             past_events.insert(event.id.parse::<u64>().unwrap());
-                            ()
                         });
                     }
 
                     new_events.iter().for_each(|event| {
                         past_events.insert(event.id.parse::<u64>().unwrap());
-                        ()
                     });
                     debug!(target: LOG_TARGET, "Old events: {}", old_events.len());
                     debug!(target: LOG_TARGET, "New events: {}", new_events.len());
@@ -132,10 +132,8 @@ fn serialize_and_filter_events(response: Response, past_events: &mut HashSet<u64
                     let mut tmpfile = std::env::temp_dir();
                     tmpfile.push("basinix");
                     tmpfile.push("failed_json_parse");
-                    std::fs::create_dir_all(&tmpfile.as_path()).expect(&format!(
-                        "Unable to create directory {:?}",
-                        &tmpfile.as_path()
-                    ));
+                    std::fs::create_dir_all(&tmpfile.as_path()).unwrap_or_else(|_| panic!("Unable to create directory {:?}",
+                        &tmpfile.as_path()));
                     tmpfile.push(format!("{}.txt", Local::now().to_rfc3339()));
                     let tmppath = tmpfile.as_path();
 
@@ -153,5 +151,5 @@ fn serialize_and_filter_events(response: Response, past_events: &mut HashSet<u64
         }
     }
 
-    return Vec::<Event>::new();
+    Vec::<Event>::new()
 }

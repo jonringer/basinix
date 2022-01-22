@@ -5,9 +5,9 @@
 
 use basinix_shared::types::{BuildRequest, GlobalConfig};
 use std::sync::atomic::{AtomicU64, Ordering};
-use log::{error, info};
+use log::{info};
 
-const build_count: AtomicU64 = AtomicU64::new(0);
+static BUILD_COUNT: AtomicU64 = AtomicU64::new(0);
 
 const LOG_TARGET: &str = "basinix::server::build_manager";
 
@@ -20,7 +20,7 @@ pub fn spawn_build_manager (config: GlobalConfig, recv: std::sync::mpsc::Receive
             .expect("Build request channel was closed, unable to build any more derivations");
 
         // wait until enough builds finish
-        while build_count.load(Ordering::SeqCst) >= config.parallel_builds {
+        while BUILD_COUNT.load(Ordering::SeqCst) >= config.parallel_builds {
             std::thread::sleep(sleep_duration);
         }
 
@@ -55,7 +55,7 @@ fn build_drv(request: BuildRequest, config: GlobalConfig) {
         .args(&[ "-r", &request.drv, "--cores", &config.cores_per_build.to_string() ]);
     info!(target: LOG_TARGET, "finished build for attr: {}, drv: {}", &request.attr, &request.drv);
     
-    build_count.fetch_sub(1, Ordering::SeqCst);
+    BUILD_COUNT.fetch_sub(1, Ordering::SeqCst);
 
     // TODO: emit that build succeeced
 }

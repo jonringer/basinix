@@ -1,4 +1,4 @@
-use basinix_shared::read_config;
+
 use basinix_shared::types::{BuildRequest, GlobalConfig};
 use basinix_shared::types::Message::{self, EvalPullRequest, EvalPush, PullRequestClosed};
 use log::{debug, error, info};
@@ -16,10 +16,8 @@ fn ensure_nixpkgs_exists(config: GlobalConfig) {
 
     if !nixpkgs_path.exists() {
         info!("Creating nixpkgs checkout at {}", nixpkgs_path_str);
-        fs::create_dir_all(nixpkgs_path).expect(&format!(
-            "Unable to create nixpkgs directory at: {}",
-            nixpkgs_path_str
-        ));
+        fs::create_dir_all(nixpkgs_path).unwrap_or_else(|_| panic!("Unable to create nixpkgs directory at: {}",
+            nixpkgs_path_str));
 
         if !Command::new("git")
             .args(&[
@@ -46,8 +44,7 @@ fn ensure_nixpkgs_exists(config: GlobalConfig) {
             "origin",
         ])
         .status()
-        .unwrap()
-        .success();
+        .expect("Unable to fetch remote for nixpkgs");
 
     // We want to get into detached HEAD, as worktrees may already have a branch or commit checkedout
     Command::new("git")
@@ -57,8 +54,7 @@ fn ensure_nixpkgs_exists(config: GlobalConfig) {
             "origin/master^",
         ])
         .status()
-        .unwrap()
-        .success();
+        .expect("Unable to checkout nixpkgs origin/master");
 }
 
 pub fn eval_events(recv: Receiver<Message>, build_sender: Sender<BuildRequest>, config: GlobalConfig) {
@@ -80,7 +76,8 @@ pub fn eval_events(recv: Receiver<Message>, build_sender: Sender<BuildRequest>, 
             }
             Ok(EvalPullRequest(pr)) => {
                 info!("Evaluating pull request: {}", pr.number);
-                pull_request::eval_pr(&config, build_sender.clone(), pr.number, &mut base_revs);
+                pull_request::eval_pr(&config, build_sender.clone(), pr.number, &mut base_revs)
+                    .expect("Failed to evaluate PR");
             }
             Ok(PullRequestClosed(pr)) => {
                 info!("Pull request was closed: {}", pr);

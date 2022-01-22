@@ -126,7 +126,8 @@ pub struct GlobalConfig {
 
 fn create_dir(path: &std::path::Path) {
      info!(target: LOG_TARGET, "Creating {}", &path.to_str().unwrap());
-     std::fs::create_dir_all(&path);
+     std::fs::create_dir_all(&path)
+        .expect(&format!("Unable to create directory {}", &path.display()));
 }
 
 impl GlobalConfig {
@@ -163,7 +164,9 @@ impl GlobalConfig {
 
         if !outpaths_expression_path.exists() {
             info!(target: LOG_TARGET, "Creating {}", &outpaths_expression_path.to_str().unwrap());
-            std::fs::create_dir_all(&outpaths_expression_path.parent().unwrap());
+            std::fs::create_dir_all(
+                &outpaths_expression_path.parent().unwrap())
+                .expect(&format!("Unable to create directory for: {}", &outpaths_expression_path.display()));
             let mut f = std::fs::File::create(&outpaths_expression_path)
                 .expect(&format!("Unable to create file at location: {}", &outpaths_expression_path.to_str().unwrap()));
             f.write_all(OUTPATHS_EXPRESSION.as_bytes())
@@ -179,10 +182,10 @@ impl GlobalConfig {
             // TODO: allow for coures and build number to be configured per host
             cores_per_build: 2,
             parallel_builds: 64,
-            cache_dir: cache_dir,
-            nixpkgs_dir: nixpkgs_dir,
-            worktree_dir: worktree_dir,
-            outpaths_expression_path: outpaths_expression_path,
+            cache_dir,
+            nixpkgs_dir,
+            worktree_dir,
+            outpaths_expression_path,
         }
     }
 }
