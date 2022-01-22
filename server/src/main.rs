@@ -1,9 +1,7 @@
 use warp::Filter;
 use std::sync::mpsc;
-use std::thread;
-use std::time::Duration;
 use log::{debug, info};
-use env_logger;
+use std::thread;
 mod github_producer;
 use github_producer::produce_github_pr_events;
 use basinix_shared::read_config;
@@ -35,7 +33,7 @@ async fn main() {
         }).init();
 
     
-    let m = cli::build_cli().get_matches();
+    let _m = cli::build_cli().get_matches();
     
     let global_config: GlobalConfig = read_config();
     std::mem::forget(read_config());

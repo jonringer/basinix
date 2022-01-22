@@ -1,12 +1,9 @@
-use basinix_evaluator::eval_events;
 use basinix_shared::read_config;
-use log::{error, info};
+use log::{error};
 use std::os::unix::net::UnixListener;
-use std::sync::mpsc::{channel, Receiver};
-use std::thread;
 
 fn main() -> std::io::Result<()> {
-    let global_config = read_config();
+    let _global_config = read_config();
 
     println!("Listening on socket");
     std::fs::create_dir_all("/run/user/1000/basinix/")?;
