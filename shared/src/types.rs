@@ -74,14 +74,8 @@ pub enum System {
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
-pub struct Platform {
-    pub arch: Arch,
-    pub system: System,
-}
-
-#[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct BuildRequest {
-    pub platform: Platform, // e.g. Platform { arch = X86_64, system = Linux }
+    pub platform: String, // e.g. Platform { arch = X86_64, system = Linux }
     pub rev: String,        // Git commit sha
     pub attr: String,       // Attr to "hydrate" the drv
     pub drv: String,        // e.g. /nix/store/e1qr....-package.drv

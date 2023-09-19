@@ -3,7 +3,7 @@ use basinix_shared::github::PullRequest;
 use basinix_shared::types::{BuildRequest, GlobalConfig};
 
 use log::{debug, info};
-use reqwest::blocking::{Client};
+use reqwest::blocking::Client;
 
 use std::process::Command;
 use std::process::ExitStatus;
@@ -119,7 +119,7 @@ fn split_output_to_separate_files(src_file: impl Read, prefix: &str, worktree_di
 
 pub fn eval_pr(config: &GlobalConfig, _build_sender: std::sync::mpsc::Sender<BuildRequest>, pr_number: u64, base_revs: &mut std::collections::HashMap<String, String>) -> Result<u32, std::io::Error> {
 
-    let pr_info = get_pr_response(pr_number).map(|body| serde_json::from_str::<PullRequest>(&body).expect("Unable to serialize github pr response")).unwrap();
+    let pr_info: PullRequest = get_pr_response(pr_number);
 
     // This is less awkward than using the PathBuf `push` paradigm
     let base_path = format!("{}/{}", config.worktree_dir.to_str().unwrap(), &pr_info.base.base_ref);
@@ -222,6 +222,8 @@ pub fn eval_pr(config: &GlobalConfig, _build_sender: std::sync::mpsc::Sender<Bui
     } else {
         info!(target: LOG_TARGET, "Skipping creation of {}, already exists", &head_added_attr_outputs_str);
     }
+    let head_added_attr_outputs_file = BufReader::new(File::open(&head_added_attr_outputs_str).expect("Could not open file"));
+    let head_added_attr_outputs_lines = head_added_attr_outputs_file.lines().count() as u32;
 
     if !head_removed_attr_outputs.exists() {
         let output_file = File::create(&head_removed_attr_outputs).unwrap_or_else(|_| panic!("Unable to write to {}", &head_removed_attr_outputs_str));
@@ -247,8 +249,45 @@ pub fn eval_pr(config: &GlobalConfig, _build_sender: std::sync::mpsc::Sender<Bui
         info!(target: LOG_TARGET, "Skipping creation of {}, already exists", &head_base_rev_str);
     }
 
+    let head_added_attr_outputs_file = BufReader::new(File::open(&head_added_attr_outputs_str).expect("Could not open file"));
+    for maybeLine in head_added_attr_outputs_file.lines() {
+        if let Ok(line) = maybeLine {
+            let mut parts = line.split_whitespace();
+            let attr_path_with_platform = parts.next().unwrap();
+            let (attr, platform) = get_attr_parts(attr_path_with_platform);
+            let drv = parts.next().unwrap();
+            let br = BuildRequest {
+                platform: platform.to_string(),
+                rev: pr_info.head.sha.to_string(),
+                attr: attr.to_string(),
+                drv: drv.to_string(),
+                build_count: head_added_attr_outputs_lines
+            };
+
+            _build_sender.send(br).expect(&format!("Unable to submit build request for {} on sha:{}", &attr, &pr_info.head.sha));
+        };
+    }
+
     // TODO: determine number of changed builds from new_drvs file
-    Ok(1)
+    Ok(head_added_attr_outputs_lines)
+}
+
+/// Splits an attr path into it's respective parts
+/// E.g. `python3Packages.requests.x86_64-linux` -> (python3Packages.requests, x86_64-linux)
+pub fn get_attr_parts (full_path: &str) -> (String, String) {
+    let mut parts = full_path.split(".");
+
+    let mut attr_path = parts.next().unwrap().to_owned();
+    let mut temp = parts.next().unwrap();
+
+    // peek at the next value, then consume the previous value accordingly
+    if let Some(part) = parts.next() {
+        attr_path.push_str(".");
+        attr_path.push_str(temp);
+        temp = part;
+    }
+
+    (attr_path.clone(), temp.to_string())
 }
 
 pub fn generate_build_requests (drv_file_path: &Path, _build_sender: Sender<BuildRequest>) {
@@ -360,6 +399,7 @@ pub fn query_outpaths(config: &GlobalConfig, worktree_dir: &Path, output_paths_f
         worktree_dir.to_str().unwrap()
     ];
 
+    info!(target: LOG_TARGET, "Evaluating derivations for: {}", &worktree_dir.display());
     debug!(target: LOG_TARGET, "Running command: nix-env {}", nix_env_args.join(" "));
     let cmd1 = Command::new("nix-env")
         .current_dir(worktree_dir)
@@ -386,7 +426,7 @@ pub fn query_outpaths(config: &GlobalConfig, worktree_dir: &Path, output_paths_f
     status
 }
 
-pub fn get_pr_response(pr_number: u64) -> Result<String, reqwest::Error> {
+pub fn get_pr_response(pr_number: u64) -> PullRequest {
     let request_client = Client::new();
 
     let mut request = request_client
@@ -403,9 +443,10 @@ pub fn get_pr_response(pr_number: u64) -> Result<String, reqwest::Error> {
     }
 
     info!(target: LOG_TARGET, "Querying PR #{}", pr_number);
-    request.send()?.text()
-    //.and_then(|body|
-    //serde_json::from_str::<PullRequest>(&body))
+    let body = request.send().expect("Unable to query github pr api")
+        .text().expect("Unable to parse text response from github api");
+    serde_json::from_str::<PullRequest>(&body)
+        .expect("Unable to serialize pr response")
 }
 
 // fn handle_serialization_error(body: reqwest::Body, err: serde_json::Err) {

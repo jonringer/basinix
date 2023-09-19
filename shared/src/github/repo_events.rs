@@ -124,7 +124,7 @@ pub struct Comment {
     author_association: AuthorAssociation,
 
     #[serde(rename = "body")]
-    body: String,
+    body: Option<String>,
 
     #[serde(rename = "performed_via_github_app")]
     performed_via_github_app: Option<serde_json::Value>,
