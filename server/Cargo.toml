@@ -2,7 +2,7 @@
 name = "basinix-server"
 version = "0.1.0"
 authors = ["Jonathan Ringer <jonringer117@gmail.com>"]
-edition = "2018"
+edition = "2021"
 description = "Continuous Integration Server for nixpkgs"
 repository = "https://github.com/jonringer/basinix"
 

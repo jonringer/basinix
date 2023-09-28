@@ -11,6 +11,7 @@ lazy_static! {
 const LOG_TARGET: &str = "basinix::shared::types";
 
 #[derive(Serialize, Deserialize, Debug)]
+#[derive(derive_more::From)]
 // should match entries in up.sql
 pub enum PRStatus {
   Unknown = 1,
@@ -19,21 +20,6 @@ pub enum PRStatus {
   Closed = 4,
   Success = 5,
   Failed = 6,
-}
-
-// should match entries in up.sql
-impl PRStatus {
-    fn from_int(val: u64) -> Option<Self>  {
-        match val {
-            1 => Some(PRStatus::Unknown),
-            2 => Some(PRStatus::Queued),
-            3 => Some(PRStatus::InProgress),
-            4 => Some(PRStatus::Closed),
-            5 => Some(PRStatus::Success),
-            6 => Some(PRStatus::Failed),
-            _ => None
-        }
-    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]

@@ -1,5 +1,5 @@
 
-use basinix_shared::github::PullRequest;
+use basinix_shared::github::pull_request::PullRequest;
 use basinix_shared::types::{BuildRequest, GlobalConfig};
 
 use log::{debug, info};
@@ -250,8 +250,8 @@ pub fn eval_pr(config: &GlobalConfig, _build_sender: std::sync::mpsc::Sender<Bui
     }
 
     let head_added_attr_outputs_file = BufReader::new(File::open(&head_added_attr_outputs_str).expect("Could not open file"));
-    for maybeLine in head_added_attr_outputs_file.lines() {
-        if let Ok(line) = maybeLine {
+    for maybe_line in head_added_attr_outputs_file.lines() {
+        if let Ok(line) = maybe_line {
             let mut parts = line.split_whitespace();
             let attr_path_with_platform = parts.next().unwrap();
             let (attr, platform) = get_attr_parts(attr_path_with_platform);

@@ -3,6 +3,7 @@ extern crate lazy_static;
 
 pub mod db;
 
+pub mod error;
 pub mod eval_events;
 pub mod github;
 pub mod types;
