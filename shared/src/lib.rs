@@ -10,14 +10,6 @@ pub mod types;
 
 use types::{FileConfig, GlobalConfig};
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-}
-
 pub fn read_config() -> GlobalConfig {
     // TODO: actually read a config
     let file_config = FileConfig { cache_dir: None };

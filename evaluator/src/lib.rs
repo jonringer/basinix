@@ -76,8 +76,12 @@ pub fn eval_events(recv: Receiver<Message>, build_sender: Sender<BuildRequest>, 
             }
             Ok(EvalPullRequest(pr)) => {
                 info!("Evaluating pull request: {}", pr.number);
-                pull_request::eval_pr(&config, build_sender.clone(), pr.number, &mut base_revs)
-                    .expect("Failed to evaluate PR");
+                let pr_result = pull_request::eval_pr(&config, build_sender.clone(), pr.number, &mut base_revs);
+                match pr_result {
+                    Err(_) => log::error!("Failed to eval pr: {}", pr.number),
+                    Ok(_) => log::info!("Completed eval for pr: {}", pr.number)
+                }
+
             }
             Ok(PullRequestClosed(pr)) => {
                 info!("Pull request was closed: {}", pr);

@@ -1,4 +1,5 @@
 
+use basinix_shared::error::Result;
 use basinix_shared::github::pull_request::PullRequest;
 use basinix_shared::types::{BuildRequest, GlobalConfig};
 
@@ -6,7 +7,6 @@ use log::{debug, info};
 use reqwest::blocking::Client;
 
 use std::process::Command;
-use std::process::ExitStatus;
 use std::io::{Read, BufRead, BufReader, BufWriter, Write};
 
 use std::path::{Path, PathBuf};
@@ -117,9 +117,9 @@ fn split_output_to_separate_files(src_file: impl Read, prefix: &str, worktree_di
     }
 }
 
-pub fn eval_pr(config: &GlobalConfig, _build_sender: std::sync::mpsc::Sender<BuildRequest>, pr_number: u64, base_revs: &mut std::collections::HashMap<String, String>) -> Result<u32, std::io::Error> {
+pub fn eval_pr(config: &GlobalConfig, _build_sender: std::sync::mpsc::Sender<BuildRequest>, pr_number: u64, base_revs: &mut std::collections::HashMap<String, String>) -> Result<u32> {
 
-    let pr_info: PullRequest = get_pr_response(pr_number);
+    let pr_info: PullRequest = get_pr_response(pr_number)?;
 
     // This is less awkward than using the PathBuf `push` paradigm
     let base_path = format!("{}/{}", config.worktree_dir.to_str().unwrap(), &pr_info.base.base_ref);
@@ -169,7 +169,7 @@ pub fn eval_pr(config: &GlobalConfig, _build_sender: std::sync::mpsc::Sender<Bui
 
     // query outpaths
     if !head_drv_outputs.exists() {
-        query_pr_outpaths(config, head_worktree_dir, head_drv_outputs, &pr_info.base.base_ref, &base_rev);
+        query_pr_outpaths(config, head_worktree_dir, head_drv_outputs, &pr_info.base.base_ref, &base_rev)?;
     }
 
     // create changed derivations file
@@ -300,7 +300,7 @@ pub fn generate_build_requests (drv_file_path: &Path, _build_sender: Sender<Buil
     }
 }
 
-fn query_base_outpaths(config: &GlobalConfig, worktree_dir: &Path, base_ref: &str) -> Result<(String, PathBuf), std::io::Error> {
+fn query_base_outpaths(config: &GlobalConfig, worktree_dir: &Path, base_ref: &str) -> Result<(String, PathBuf)> {
     // reset directory, to avoid a previous run
     Command::new("git")
         .current_dir(worktree_dir)
@@ -309,7 +309,8 @@ fn query_base_outpaths(config: &GlobalConfig, worktree_dir: &Path, base_ref: &st
             ,"--"
             ,"."
         ])
-        .status().ok();
+        .status()?;
+
     // bring changes from base branch into worktree dir
     Command::new("git")
         .current_dir(worktree_dir)
@@ -318,7 +319,7 @@ fn query_base_outpaths(config: &GlobalConfig, worktree_dir: &Path, base_ref: &st
             ,"origin"
             ,base_ref
         ])
-        .status().ok();
+        .status()?;
 
     let base_rev: String = std::str::from_utf8(&Command::new("git")
         .current_dir(worktree_dir)
@@ -326,22 +327,20 @@ fn query_base_outpaths(config: &GlobalConfig, worktree_dir: &Path, base_ref: &st
             "rev-parse"
             ,"HEAD"
         ])
-        .output()
-        .unwrap()
-        .stdout)
-        .unwrap()
+        .output()?
+        .stdout)?
         .trim()
         .to_owned();
 
     let output_paths_file_str = format!("{}/{}.outputs.txt", worktree_dir.display(), &base_rev);
     let output_paths_file = Path::new(&output_paths_file_str);
 
-    query_outpaths(config, worktree_dir, output_paths_file);
+    query_outpaths(config, worktree_dir, output_paths_file)?;
 
     Ok((base_rev, output_paths_file.to_path_buf()))
 }
 
-pub fn query_pr_outpaths(config: &GlobalConfig, worktree_dir: &Path, output_paths_file: &Path, base_ref: &str, base_rev: &str) -> ExitStatus {
+pub fn query_pr_outpaths(config: &GlobalConfig, worktree_dir: &Path, output_paths_file: &Path, base_ref: &str, base_rev: &str) -> Result<()> {
     // reset directory, to avoid a previous run
     debug!("Running command: PWD={} git checkout -- .", worktree_dir.display());
     Command::new("git")
@@ -351,8 +350,8 @@ pub fn query_pr_outpaths(config: &GlobalConfig, worktree_dir: &Path, output_path
             ,"--"
             ,"."
         ])
-        .status()
-        .expect(&format!("Unable to create worktree: {}", &worktree_dir.display()));
+        .status()?;
+
     // ensure that the commit will be available
     debug!("Running command: PWD={} git fetch origin {}", worktree_dir.display(), base_ref);
     Command::new("git")
@@ -377,10 +376,11 @@ pub fn query_pr_outpaths(config: &GlobalConfig, worktree_dir: &Path, output_path
         .status()
         .expect("git pull merge failed.");
 
-    query_outpaths(config, worktree_dir, output_paths_file)
+    query_outpaths(config, worktree_dir, output_paths_file)?;
+    Ok(())
 }
 
-pub fn query_outpaths(config: &GlobalConfig, worktree_dir: &Path, output_paths_file: &Path) -> ExitStatus {
+pub fn query_outpaths(config: &GlobalConfig, worktree_dir: &Path, output_paths_file: &Path) -> Result<()> {
     let output_file = File::create(&output_paths_file).unwrap_or_else(|_| panic!("Unable to write to {}", &output_paths_file.to_str().unwrap()));
     // This should create a file with the following contents:
     // <attr>.<system> <drv-path> <out-path>
@@ -405,7 +405,7 @@ pub fn query_outpaths(config: &GlobalConfig, worktree_dir: &Path, output_paths_f
         .current_dir(worktree_dir)
         .stdout(std::process::Stdio::piped())
         .args(nix_env_args)
-        .spawn().unwrap();
+        .spawn()?;
 
     // tests.nixos-functions and tests.trivial just create noise
     let filter_noisy_drvs_cmd = Command::new("grep")
@@ -413,20 +413,19 @@ pub fn query_outpaths(config: &GlobalConfig, worktree_dir: &Path, output_paths_f
         .stdin(cmd1.stdout.unwrap())
         .stdout(std::process::Stdio::piped())
         .args(&[ "-Fv", "-e", "tests.nixos-function", "-e", "tests.trivial"])
-        .spawn().unwrap();
+        .spawn()?;
 
-    let status = Command::new("sort")
+    Command::new("sort")
         .current_dir(worktree_dir)
         .stdin(filter_noisy_drvs_cmd.stdout.unwrap())
         .stdout(output_file)
-        .status()
-        .expect("Unable to query derivation list");
+        .status()?;
 
     debug!(target: LOG_TARGET, "Finished running nix-env for {}.", worktree_dir.display());
-    status
+    Ok(())
 }
 
-pub fn get_pr_response(pr_number: u64) -> PullRequest {
+pub fn get_pr_response(pr_number: u64) -> Result<PullRequest> {
     let request_client = Client::new();
 
     let mut request = request_client
@@ -443,10 +442,8 @@ pub fn get_pr_response(pr_number: u64) -> PullRequest {
     }
 
     info!(target: LOG_TARGET, "Querying PR #{}", pr_number);
-    let body = request.send().expect("Unable to query github pr api")
-        .text().expect("Unable to parse text response from github api");
-    serde_json::from_str::<PullRequest>(&body)
-        .expect("Unable to serialize pr response")
+    let body = request.send()?.text()?;
+    Ok(serde_json::from_str::<PullRequest>(&body)?)
 }
 
 // fn handle_serialization_error(body: reqwest::Body, err: serde_json::Err) {
