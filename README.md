@@ -64,6 +64,9 @@ This is also meant to be exposed as a website similar to Hydra. However, there w
 
 # Future Features
 
+- [ ] Added, removed, changed files from outputs between base branch and head
+- [ ] Allow for "post-build-hook" like behavior of uploading artifacts with explicit lifetimes
+- [ ] Diffoscope like changes from base branch to PR
 - [ ] Mult-platform support (unlikely to happen unless someone donates hardware)
   - [ ] Support remote host workers
   - [ ] aarch64-linux
