@@ -1,4 +1,4 @@
-## WARNING: This is very much in alpha, do not expect this to be working or polished
+## Deprecated: This is now intended to be [an integrated CI tool](https://github.com/ekala-project/eka-ci)
 
 # Basinix
 
